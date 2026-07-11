@@ -1,0 +1,340 @@
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Palette (as per examples) */
+    --primary: hsl(202 93% 57%); /* Blue (full color) */
+    --color-hsl-secondary: hsl(214, 100%, 53%);
+    --text-hsl-primary: hsl(0 0% 100%);
+    --highlight: hsl(51 96% 57%); /* Gold (full color) */
+
+    /* Shadcn/Tailwind tokens (HSL components, no hsl()) */
+    --background: 208 55% 9%; /* Dark navy */
+    --card: 222 84% 5%; /* Card surface */
+    --secondary: 217 33% 18%; /* Muted surface */
+    --muted: 217 33% 18%;
+    --border: 217 33% 18%;
+    --muted-foreground: 215 20% 65%;
+    --destructive: 0 63% 31%;
+
+    /* Shadcn: keep accent subtle (not gold) */
+    --accent: 217 33% 18%;
+
+    /* Backwards compatibility */
+    /* Map token components to real CSS colors for legacy var(...) usage */
+    --bg-primary: hsl(var(--background));
+    --bg-secondary: hsl(var(--card));
+    --color-primary: var(--primary);
+    --color-secondary: var(--color-hsl-secondary); /* Blue-600-ish for hovers/gradients */
+    --color-accent: var(--primary); /* Use blue for links/borders/active */
+    --color-highlight: var(--highlight); /* Gold only for key CTAs */
+    --color-destructive: hsl(var(--destructive));
+    --text-primary: var(--text-hsl-primary);
+    --text-secondary: hsl(var(--muted-foreground));
+    --border-color: hsl(var(--border));
+
+    /* Shadcn UI compatibility */
+    --foreground: 0 0% 100%;
+    --card-foreground: 0 0% 100%;
+    --popover: var(--card);
+    --popover-foreground: 0 0% 100%;
+    --primary-foreground: 0 0% 0%;
+    --secondary-foreground: 0 0% 100%;
+    --accent-foreground: 0 0% 0%;
+    --destructive-foreground: 0 0% 100%;
+    --input: var(--secondary);
+    --ring: 202 93% 57%;
+    --radius: 0.625rem;
+
+    /* Legacy colors for gradual migration */
+    --white-100: #fff;
+    --white-300: rgba(31, 41, 61, 0.3);
+    --white-400: rgba(31, 41, 61, 0.5);
+    --darkslategray-100: hsl(var(--secondary));
+    --darkslategray-200: hsl(var(--secondary));
+    --deepskyblue-100: var(--primary);
+    --deepskyblue-200: var(--primary);
+    --deepskyblue-300: color-mix(in srgb, var(--primary) 25%, transparent);
+    --deepskyblue-500: color-mix(in srgb, var(--primary) 25%, transparent);
+    --deepskyblue-600: color-mix(in srgb, var(--primary) 80%, transparent);
+    --deepskyblue-800: color-mix(in srgb, var(--primary) 12%, transparent);
+    --darkorchid-100: var(--highlight);
+
+    --chart-1: var(--primary);
+    --chart-2: var(--highlight);
+    --chart-3: var(--secondary);
+    --chart-4: var(--muted-foreground);
+    --chart-5: var(--destructive);
+
+    /* Tailwind config tokens */
+    --bg-card: color-mix(in srgb, var(--bg-secondary) 82%, black);
+    --discord-blue: #5865F2;
+
+    --gray-100: rgba(255, 255, 255, 0.92);
+    --gray-200: rgba(255, 255, 255, 0.74);
+    --gray-300: rgba(255, 255, 255, 0.62);
+    --gray-400: rgba(255, 255, 255, 0.42);
+
+    --dark-100: var(--bg-primary);
+    --dark-200: color-mix(in srgb, var(--bg-primary) 78%, black);
+    --dark-300: var(--bg-secondary);
+
+    --cyan-100: color-mix(in srgb, var(--primary) 18%, transparent);
+    --cyan-200: color-mix(in srgb, var(--primary) 32%, transparent);
+    --cyan-300: color-mix(in srgb, var(--primary) 50%, transparent);
+
+    --blue-100: color-mix(in srgb, var(--color-secondary) 18%, transparent);
+    --blue-200: color-mix(in srgb, var(--color-secondary) 32%, transparent);
+    --blue-300: color-mix(in srgb, var(--color-secondary) 50%, transparent);
+
+    --purple-100: rgba(168, 85, 247, 0.18);
+    --purple-200: rgba(168, 85, 247, 0.35);
+
+    --green-100: rgba(16, 185, 129, 0.18);
+    --green-200: rgba(16, 185, 129, 0.32);
+    --green-300: rgba(16, 185, 129, 0.5);
+
+    --yellow-100: rgba(234, 179, 8, 0.18);
+    --yellow-200: rgba(234, 179, 8, 0.32);
+    --yellow-300: rgba(234, 179, 8, 0.5);
+
+    --orange-100: rgba(249, 115, 22, 0.18);
+    --orange-200: rgba(249, 115, 22, 0.32);
+    --orange-300: rgba(249, 115, 22, 0.5);
+
+    --red-100: rgba(239, 68, 68, 0.25);
+    --red-200: rgba(239, 68, 68, 0.45);
+
+    /* Glare hover (buttons) */
+    --gh-angle: -45deg;
+    --gh-size: 250%;
+    --gh-duration: 650ms;
+    --gh-opacity: 0.35;
+    --gh-color: 255 255 255;
+  }
+  .theme {
+    --font-heading: var(--font-sans);
+    --font-sans: var(--font-sans);
+  }
+  .dark {
+    /* Keep dark mode tokens in HSL-component format so Tailwind's hsl(var(--token)) works */
+    --background: 208 55% 9%;
+    --foreground: 0 0% 100%;
+    --card: 222 84% 5%;
+    --card-foreground: 0 0% 100%;
+    --popover: 222 84% 5%;
+    --popover-foreground: 0 0% 100%;
+    --secondary: 217 33% 18%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 217 33% 18%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 217 33% 18%;
+    --accent-foreground: 0 0% 0%;
+    --destructive: 0 63% 31%;
+    --border: 217 33% 18%;
+    --input: 217 33% 18%;
+    --ring: 202 93% 57%;
+  }
+  body {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-feature-settings: "rlig" 1, "calt" 1;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    text-rendering: geometricPrecision;
+  }
+}
+
+@layer utilities {
+  .page-title {
+    @apply text-white;
+  }
+
+  /* Text Overflow Utilities */
+  .overflow-wrap-anywhere {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  /* Glassmorphism Effects */
+  .glass {
+    background-color: var(--white-300);
+    backdrop-filter: blur(24px);
+    border: 1px solid var(--white-400);
+  }
+
+  .glass-hover {
+    transition: all 300ms;
+  }
+
+  .glass-hover:hover {
+    background-color: var(--white-400);
+  }
+
+  .glass-card {
+    background-color: rgba(31, 41, 55, 0.72);
+    background-color: color-mix(in srgb, var(--darkslategray-200) 72%, transparent);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(33, 167, 255, 0.22);
+    border-radius: 0.75rem;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+  }
+
+  /* Cyan Border Effects */
+  .cyan-border {
+    border: 1px solid var(--deepskyblue-500);
+  }
+
+  .cyan-border-bright {
+    border: 1px solid var(--deepskyblue-600);
+  }
+
+  .gradient-border {
+    position: relative;
+  }
+
+  .gradient-border::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 0.5rem;
+    padding: 1px;
+    background: linear-gradient(to right, var(--deepskyblue-100), var(--darkorchid-100), var(--deepskyblue-200));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    z-index: -10;
+  }
+
+  /* Premium Card Styles */
+  .premium-card {
+    background-color: rgba(31, 41, 55, 0.72);
+    background-color: color-mix(in srgb, var(--darkslategray-200) 72%, transparent);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(33, 167, 255, 0.18);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    transition: all 300ms;
+  }
+
+  .premium-card-hover:hover {
+    border-color: rgba(33, 167, 255, 0.32);
+    background-color: rgba(31, 41, 55, 0.82);
+    background-color: color-mix(in srgb, var(--darkslategray-200) 82%, transparent);
+  }
+
+  .gradient-text {
+    background: linear-gradient(90deg, var(--color-primary), var(--color-secondary), var(--color-accent));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--darkslategray-100);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-accent);
+  border-radius: 6px;
+  border: 2px solid var(--darkslategray-100);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-secondary);
+}
+
+/* Selection */
+::selection {
+  background-color: var(--deepskyblue-300);
+  color: var(--white-100);
+}
+
+/* Smooth Animations */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer 3s infinite linear;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    var(--deepskyblue-800) 50%,
+    transparent 100%
+  );
+  background-size: 1000px 100%;
+}
+
+@keyframes blob {
+  0% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  33% {
+    transform: translate(30px, -50px) scale(1.1);
+  }
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+  100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+}
+
+.animate-blob {
+  animation: blob 7s infinite;
+}
+
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+
+.animation-delay-4000 {
+  animation-delay: 4s;
+}
+
+@keyframes gradient {
+  0%, 100% {
+    background-size: 200% 200%;
+    background-position: left center;
+  }
+  50% {
+    background-size: 200% 200%;
+    background-position: right center;
+  }
+}
+
+.animate-gradient {
+  animation: gradient 3s ease infinite;
+}
+
+/* Focus Styles */
+*:focus-visible {
+  outline: 2px solid var(--deepskyblue-100);
+  outline-offset: 2px;
+}
+
+/* Smooth Transitions */
+* {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
