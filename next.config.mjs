@@ -2,6 +2,9 @@
 const nextConfig = {
   distDir: '.next-build',
   images: {
+    // Serve modern formats (smaller payloads, faster paint)
+    formats: ['image/avif', 'image/webp'],
+    minimumCacheTTL: 60 * 60 * 24 * 7, // cache optimized images for a week
     remotePatterns: [
       {
         protocol: 'https',

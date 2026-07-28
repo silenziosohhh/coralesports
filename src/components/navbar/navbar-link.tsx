@@ -11,12 +11,16 @@ export function NavbarLink({
   onNavigate,
   variant = "desktop",
   className,
+  onMouseEnter,
+  onMouseLeave,
 }: {
   href: string;
   children: ReactNode;
   onNavigate?: () => void;
   variant?: "desktop" | "mobile";
   className?: string;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
 }) {
   const pathname = usePathname();
   const isActive = pathname === href || pathname.startsWith(`${href}/`);
@@ -38,6 +42,8 @@ export function NavbarLink({
       href={href}
       className={cn(base, state, focus, className)}
       onClick={onNavigate}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
       aria-current={isActive ? "page" : undefined}
     >
       {children}

@@ -1,9 +1,12 @@
 import type { ComponentType } from "react";
 import type { LucideProps } from "lucide-react";
-import { Award, Shield, TrendingUp, Trophy, Users, Zap } from "lucide-react";
+import { Gift, Trophy, Users } from "lucide-react";
 
 export type LandingFeature = {
+  /** Stable identifier — used for i18n keys and image lookup. */
+  slug: "brackets" | "teams" | "prizes";
   icon: ComponentType<LucideProps>;
+  /** Fallback title (translated at render via feature.<slug>.title). */
   title: string;
   description: string;
   color: string;
@@ -11,39 +14,24 @@ export type LandingFeature = {
 
 export const landingFeatures: LandingFeature[] = [
   {
+    slug: "brackets",
     icon: Trophy,
     title: "Bracket Avanzati",
     description: "Eliminazione singola, doppia e round robin con generazione automatica",
     color: "var(--color-accent)",
   },
   {
+    slug: "teams",
     icon: Users,
     title: "Gestione Team",
     description: "Crea team, invita giocatori e gestisci il roster con facilità",
     color: "var(--color-primary)",
   },
   {
-    icon: Shield,
-    title: "Integrazione Discord",
-    description: "Login OAuth seamless con sincronizzazione automatica del profilo",
-    color: "var(--color-secondary)",
-  },
-  {
-    icon: TrendingUp,
-    title: "Sistema ELO",
-    description: "Ranking competitivo che traccia le tue performance",
-    color: "var(--color-accent)",
-  },
-  {
-    icon: Zap,
-    title: "Aggiornamenti Real-time",
-    description: "Punteggi live, notifiche match e progressione istantanea",
-    color: "var(--color-primary)",
-  },
-  {
-    icon: Award,
-    title: "Statistiche & Analytics",
-    description: "Statistiche dettagliate, cronologia match e analytics",
+    slug: "prizes",
+    icon: Gift,
+    title: "Premi Reali",
+    description: "Monta premi in palio in ogni torneo: vinci le sfide e conquista ricompense concrete, non solo gloria",
     color: "var(--color-secondary)",
   },
 ];

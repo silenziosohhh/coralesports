@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Orbitron } from "next/font/google";
 import { useSession, signOut } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
@@ -15,8 +17,12 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Trophy, Users, LayoutDashboard, Settings, LogOut, Menu, Bell, Calendar, AlertCircle } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { NavbarLink } from "@/components/navbar/navbar-link";
+import { GlobalSearch } from "@/components/navbar/global-search";
+import { VideoIcon, type VideoIconHandle } from "@/components/ui/video-icon";
+import { LanguageSwitcher } from "@/components/language-switcher";
+import { useI18n } from "@/lib/i18n";
 
 interface Notification {
   id: string;
@@ -44,13 +50,30 @@ const notificationColors = {
   SYSTEM: "text-yellow-400",
 };
 
+const orbitron = Orbitron({
+  subsets: ["latin"],
+  weight: ["700", "800"],
+});
+
 export function Navbar() {
+  const pathname = usePathname();
+  const { t } = useI18n();
   const { data: session } = useSession();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const isHome = pathname === "/";
+
+  const tourneiDesktopRef = useRef<VideoIconHandle>(null);
+  const teamsDesktopRef = useRef<VideoIconHandle>(null);
+  const classificaDesktopRef = useRef<VideoIconHandle>(null);
+  const storeDesktopRef = useRef<VideoIconHandle>(null);
+  const tourneiMobileRef = useRef<VideoIconHandle>(null);
+  const teamsMobileRef = useRef<VideoIconHandle>(null);
+  const classificaMobileRef = useRef<VideoIconHandle>(null);
+  const storeMobileRef = useRef<VideoIconHandle>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -104,28 +127,71 @@ export function Navbar() {
 
   return (
     <nav
-      className={`sticky top-0 z-50 w-full transition-all duration-300 ${
+      className={`top-0 z-50 w-full transition-all duration-300 ${
+        isHome ? "fixed left-0 right-0" : "sticky"
+      } ${
         scrolled
-          ? "border-b border-transparent bg-[var(--bg-primary)]/80 backdrop-blur-2xl shadow-[0_16px_40px_rgba(0,0,0,0.35)]"
-          : "border-b border-transparent"
+          ? "border-b border-transparent bg-[var(--bg-primary)]/52 backdrop-blur-2xl shadow-[0_16px_40px_rgba(0,0,0,0.35)]"
+          : isHome
+            ? "border-b border-transparent bg-transparent"
+            : "border-b border-transparent bg-[var(--bg-primary)]/88 backdrop-blur-xl"
       }`}
     >
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         {/* Logo */}
-        <Link href="/" className="flex items-center space-x-2">
+        <Link href="/" className="flex items-center gap-3">
           <Image src="/logo.png" alt="CoralMC" width={32} height={32} className="rounded-lg" priority={false} />
+          <span
+            className={`${orbitron.className} hidden bg-gradient-to-r from-[var(--color-secondary)] via-[var(--color-accent)] to-[var(--color-highlight)] bg-clip-text text-sm font-extrabold uppercase tracking-[0.18em] text-transparent drop-shadow-[0_0_18px_rgba(0,157,255,0.22)] sm:inline-block`}
+          >
+            CoralMC Esports
+          </span>
         </Link>
 
         {/* Desktop Navigation */}
         <div className="hidden items-center space-x-6 md:flex">
-          <NavbarLink href="/tournaments">Tornei</NavbarLink>
-          <NavbarLink href="/teams">Teams</NavbarLink>
-          <NavbarLink href="/leaderboard">Classifica</NavbarLink>
-          <NavbarLink href="/store">Store</NavbarLink>
+          <NavbarLink
+            href="/tournaments"
+            className="gap-2"
+            onMouseEnter={() => tourneiDesktopRef.current?.play()}
+            onMouseLeave={() => tourneiDesktopRef.current?.pause()}
+          >
+            <VideoIcon ref={tourneiDesktopRef} src="/icons/podium.mp4" />
+            {t("nav.tournaments")}
+          </NavbarLink>
+          <NavbarLink
+            href="/teams"
+            className="gap-2"
+            onMouseEnter={() => teamsDesktopRef.current?.play()}
+            onMouseLeave={() => teamsDesktopRef.current?.pause()}
+          >
+            <VideoIcon ref={teamsDesktopRef} src="/icons/win-win.mp4" />
+            {t("nav.teams")}
+          </NavbarLink>
+          <NavbarLink
+            href="/leaderboard"
+            className="gap-2"
+            onMouseEnter={() => classificaDesktopRef.current?.play()}
+            onMouseLeave={() => classificaDesktopRef.current?.pause()}
+          >
+            <VideoIcon ref={classificaDesktopRef} src="/icons/ranking.mp4" />
+            {t("nav.leaderboard")}
+          </NavbarLink>
+          <NavbarLink
+            href="/store"
+            className="gap-2"
+            onMouseEnter={() => storeDesktopRef.current?.play()}
+            onMouseLeave={() => storeDesktopRef.current?.pause()}
+          >
+            <VideoIcon ref={storeDesktopRef} src="/icons/shopping-bag.mp4" />
+            {t("nav.store")}
+          </NavbarLink>
         </div>
 
         {/* User Menu */}
         <div className="flex items-center space-x-4">
+          <GlobalSearch />
+          <LanguageSwitcher />
           {session ? (
             <>
               {/* Notifications Dropdown */}
@@ -302,7 +368,7 @@ export function Navbar() {
             </>
           ) : (
             <Button variant="cyan" asChild>
-              <Link href="/auth/signin">Sign In</Link>
+              <Link href="/auth/signin">{t("nav.signIn")}</Link>
             </Button>
           )}
 
@@ -325,30 +391,46 @@ export function Navbar() {
             <NavbarLink
               href="/tournaments"
               variant="mobile"
+              className="flex items-center gap-2"
               onNavigate={() => setMobileMenuOpen(false)}
+              onMouseEnter={() => tourneiMobileRef.current?.play()}
+              onMouseLeave={() => tourneiMobileRef.current?.pause()}
             >
-              Tornei
+              <VideoIcon ref={tourneiMobileRef} src="/icons/podium.mp4" />
+              {t("nav.tournaments")}
             </NavbarLink>
             <NavbarLink
               href="/teams"
               variant="mobile"
+              className="flex items-center gap-2"
               onNavigate={() => setMobileMenuOpen(false)}
+              onMouseEnter={() => teamsMobileRef.current?.play()}
+              onMouseLeave={() => teamsMobileRef.current?.pause()}
             >
-              Teams
+              <VideoIcon ref={teamsMobileRef} src="/icons/win-win.mp4" />
+              {t("nav.teams")}
             </NavbarLink>
             <NavbarLink
               href="/leaderboard"
               variant="mobile"
+              className="flex items-center gap-2"
               onNavigate={() => setMobileMenuOpen(false)}
+              onMouseEnter={() => classificaMobileRef.current?.play()}
+              onMouseLeave={() => classificaMobileRef.current?.pause()}
             >
-              Classifica
+              <VideoIcon ref={classificaMobileRef} src="/icons/ranking.mp4" />
+              {t("nav.leaderboard")}
             </NavbarLink>
             <NavbarLink
               href="/store"
               variant="mobile"
+              className="flex items-center gap-2"
               onNavigate={() => setMobileMenuOpen(false)}
+              onMouseEnter={() => storeMobileRef.current?.play()}
+              onMouseLeave={() => storeMobileRef.current?.pause()}
             >
-              Store
+              <VideoIcon ref={storeMobileRef} src="/icons/shopping-bag.mp4" />
+              {t("nav.store")}
             </NavbarLink>
           </div>
         </div>

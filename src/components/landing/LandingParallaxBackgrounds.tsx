@@ -66,38 +66,35 @@ export function SoftParallaxBlobs({ progress, className }: SoftParallaxBlobsProp
 
 type VideoParallaxBackdropProps = {
   progress: MotionValue<number>;
-  videoId: string;
-  start?: number;
+  src: string;
+  poster?: string;
   className?: string;
   overlayClassName?: string;
-  title?: string;
 };
 
 export function VideoParallaxBackdrop({
   progress,
-  videoId,
-  start = 0,
+  src,
+  poster,
   className,
   overlayClassName,
-  title = "Background video",
 }: VideoParallaxBackdropProps) {
   const y = useTransform(progress, [0, 1], [-80, 80]);
   const scale = useTransform(progress, [0, 1], [1.08, 1.08]);
 
-  const src = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1&vq=hd1080&start=${start}`;
-
   return (
     <div className={cn("relative h-full w-full", className)}>
       <motion.div className="absolute inset-0" style={{ y, scale }}>
-        <iframe
-          className="absolute top-1/2 left-1/2 w-[100vw] h-[100vh] min-w-[177.77vh] min-h-[56.25vw] -translate-x-1/2 -translate-y-1/2"
+        <video
+          className="absolute left-1/2 top-1/2 h-full w-full -translate-x-1/2 -translate-y-1/2 object-cover"
           src={src}
-          title={title}
-          allow="autoplay; encrypted-media"
-          loading="lazy"
-          referrerPolicy="strict-origin-when-cross-origin"
-          sandbox="allow-same-origin allow-scripts allow-presentation"
-          allowFullScreen
+          poster={poster}
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="auto"
+          disablePictureInPicture
         />
       </motion.div>
       <div className={cn("absolute inset-0 bg-black/60", overlayClassName)} />

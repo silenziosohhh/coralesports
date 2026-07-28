@@ -1,140 +1,195 @@
 "use client";
 
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Trophy, ShoppingBag } from "lucide-react";
-import { useEffect, useState } from "react";
+import { VideoIcon, type VideoIconHandle } from "@/components/ui/video-icon";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { useSession } from "next-auth/react";
 import { ParallaxSection } from "@/components/landing/ParallaxSection";
-import {
-  HeroParallaxBackdrop,
-  SoftParallaxBlobs,
-  VideoParallaxBackdrop,
-} from "@/components/landing/LandingParallaxBackgrounds";
-import { WavyEdge } from "@/components/landing/WavyEdge";
+import { VideoParallaxBackdrop } from "@/components/landing/LandingParallaxBackgrounds";
 import { DiscordJoinSection } from "@/components/landing/DiscordJoinSection";
 import { FaDiscord } from "react-icons/fa";
-import { landingFeatures } from "@/components/landing/landingFeatures";
-import { LandingFeatureCard } from "@/components/landing/LandingFeatureCard";
+import { OceanWave } from "@/components/landing/OceanWave";
 import { WhyChooseSection } from "@/components/landing/WhyChooseSection";
+import { landingFeatures } from "@/components/landing/landingFeatures";
+import { AnimatedStats } from "@/components/landing/AnimatedStats";
+import { HowItWorksSection } from "@/components/landing/HowItWorksSection";
+import { ClipsOfTheWeekSection } from "@/components/landing/ClipsOfTheWeekSection";
+import { CreatorsSection } from "@/components/landing/CreatorsSection";
+import { landingCreators } from "@/components/landing/landingCreators";
+import { TournamentChampion } from "@/components/landing/TournamentChampion";
+import { LiveServerStatus } from "@/components/landing/LiveServerStatus";
+import { LandingAmbientBackground } from "@/components/landing/LandingAmbientBackground";
+import { Reveal } from "@/components/landing/Reveal";
+import { SectionWave } from "@/components/landing/SectionWave";
+import { useI18n } from "@/lib/i18n";
 
 export default function HomePage() {
-  const { data: session } = useSession();
+  const { t } = useI18n();
   const [mounted, setMounted] = useState(false);
+  const tourneiIconRef = useRef<VideoIconHandle>(null);
+  const shopIconRef = useRef<VideoIconHandle>(null);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
   return (
-    <div className="min-h-screen bg-[var(--bg-primary)]">
+    <div className="relative min-h-screen overflow-hidden bg-[var(--bg-primary)]">
+      <LandingAmbientBackground />
       <ParallaxSection
-        className="min-h-[100svh] flex flex-col bg-[var(--bg-primary)] items-center justify-center px-4 py-20 sm:py-24"
-        renderBackground={(progress) => <HeroParallaxBackdrop progress={progress} />}
-      >
-        <div
-          className={`container relative mx-auto text-center transition-all duration-1000 z-10 ${
-            mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-          }`}
-        >
-          <div className="relative mb-10 flex flex-col items-center justify-center gap-6 sm:mb-12 sm:flex-row">
-            <div className="relative h-[150px] w-[150px] flex-shrink-0">
-              <Image
-                src="/logo.png"
-                alt="CoralMC"
-                width={150}
-                height={150}
-                sizes="150px"
-                className="rounded-full shadow-2xl shadow-[var(--color-accent)]/50"
-                priority
+        className="relative min-h-[100svh] overflow-hidden bg-[var(--bg-primary)] px-4 pb-24 pt-24 sm:pb-28 sm:pt-28"
+        renderBackground={(progress) => (
+          <div className="absolute inset-0">
+            <div className="animate-cinematic-zoom absolute inset-0 scale-[1.06]">
+              <VideoParallaxBackdrop
+                progress={progress}
+                src="/bg/pvp-background.mp4"
+                overlayClassName="bg-black/50"
               />
             </div>
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_left_32%,rgba(10,187,255,0.24),transparent_28%),linear-gradient(90deg,rgba(3,7,18,0.94)_0%,rgba(3,7,18,0.84)_36%,rgba(3,7,18,0.42)_64%,rgba(3,7,18,0.8)_100%)]" />
+            <div className="absolute inset-x-[-8%] bottom-[-16%] h-[34vh] min-h-[220px] rounded-[100%] bg-[var(--bg-primary)]/70 blur-3xl sm:min-h-[280px] md:min-h-[360px]" />
+            <div className="absolute bottom-[-10%] left-[-5%] h-48 w-48 rounded-full bg-[var(--color-accent)]/18 blur-3xl sm:h-72 sm:w-72" />
+            <OceanWave />
           </div>
-          
-          <p className="mb-10 max-w-3xl mx-auto text-pretty text-base leading-relaxed text-gray-300 sm:mb-12 sm:text-lg md:text-2xl">
-            Entra nell&apos;arena competitiva più avanzata di Minecraft. 
-            <span className="text-[var(--color-accent)] font-semibold"> Crea team</span>, 
-            <span className="text-[var(--color-secondary)] font-semibold"> domina i tornei</span>, 
-            <span className="text-[var(--color-primary)] font-semibold"> scala le classifiche</span>.
-          </p>
-          
-          <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <Button 
-              size="lg" 
-              className="group relative h-14 w-full max-w-sm overflow-hidden px-8 text-base font-bold shadow-2xl shadow-[var(--color-accent)]/50 transition-transform sm:w-auto sm:max-w-none sm:text-lg md:hover:scale-105"
-              asChild
+        )}
+      >
+        <div
+          className={`container relative z-10 mx-auto flex min-h-[calc(100svh-3rem)] items-center transition-all duration-1000 ${mounted ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
+            }`}
+        >
+          <div className="flex w-full flex-col gap-12 lg:flex-row lg:items-end lg:justify-between">
+            <div
+              className={`flex w-full max-w-3xl flex-col items-start text-left transition-all duration-1000 ease-out ${mounted ? "translate-x-0 opacity-100" : "-translate-x-16 opacity-0"
+                }`}
             >
-              <Link href="/tournaments" className="flex items-center gap-2">
-                <Trophy className="w-5 h-5 group-hover:rotate-12 transition-transform" />
-                Esplora Tornei
-              </Link>
-            </Button>
-            <Button size="lg" variant="outline" className="flex items-center gap-2 h-14 w-full max-w-sm sm:w-auto sm:max-w-none" asChild>
-              <Link href="/shop">
-                <ShoppingBag className="w-5 h-5" />
-                Apri Shop
-              </Link>
-            </Button>
+              <div className="relative mb-6 h-[120px] w-[120px] flex-shrink-0 sm:mb-8 sm:h-[140px] sm:w-[140px] md:h-[150px] md:w-[150px]">
+                {/* Alone soffuso dietro al logo */}
+                <div
+                  aria-hidden
+                  className="absolute inset-0 -z-10 scale-125 rounded-full bg-[var(--color-accent)]/30 blur-3xl"
+                />
+                <Image
+                  src="/logo.png"
+                  alt="CoralMC"
+                  width={150}
+                  height={150}
+                  sizes="150px"
+                  className="object-contain drop-shadow-[0_8px_30px_rgba(10,187,255,0.35)]"
+                  priority
+                />
+              </div>
+
+              <h1 className="mb-6 text-5xl font-black uppercase leading-[0.95] tracking-tight text-white sm:mb-8 sm:text-6xl md:text-7xl lg:text-8xl">
+                {t("hero.title1")}
+                <br />
+                <span className="gradient-text animate-gradient bg-[length:200%_auto]">{t("hero.title2")}</span>
+              </h1>
+
+              <p className="mb-10 max-w-2xl text-pretty text-base leading-relaxed text-gray-200 sm:mb-12 sm:text-lg md:text-2xl">
+                {t("hero.lead")}
+                <span className="font-semibold text-[var(--color-accent)]"> {t("hero.highlight1")}</span>,
+                <span className="font-semibold text-[var(--color-secondary)]"> {t("hero.highlight2")}</span>,
+                <span className="font-semibold text-[var(--color-primary)]"> {t("hero.highlight3")}</span>.
+              </p>
+
+              <div className="flex w-full flex-col items-stretch gap-4 sm:w-auto sm:flex-row sm:items-center">
+                <Button
+                  size="lg"
+                  className="group relative h-14 w-full max-w-sm overflow-hidden px-8 text-base font-bold shadow-2xl shadow-[var(--color-accent)]/50 transition-transform sm:w-auto sm:max-w-none sm:text-lg md:hover:scale-105"
+                  asChild
+                >
+                  <Link
+                    href="/tournaments"
+                    className="flex items-center gap-2"
+                    onMouseEnter={() => tourneiIconRef.current?.play()}
+                    onMouseLeave={() => tourneiIconRef.current?.pause()}
+                  >
+                    <motion.span className="inline-flex" whileHover={{ scale: 1.15 }}>
+                      <VideoIcon ref={tourneiIconRef} src="/icons/podium.mp4" className="h-9 w-9" />
+                    </motion.span>
+                    {t("hero.ctaTournaments")}
+                  </Link>
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="flex h-14 w-full max-w-sm items-center gap-2 sm:w-auto sm:max-w-none"
+                  asChild
+                >
+                  <Link
+                    href="/shop"
+                    onMouseEnter={() => shopIconRef.current?.play()}
+                    onMouseLeave={() => shopIconRef.current?.pause()}
+                  >
+                    <motion.span className="inline-flex" whileHover={{ scale: 1.15 }}>
+                      <VideoIcon ref={shopIconRef} src="/icons/shopping-bag.mp4" className="h-9 w-9" />
+                    </motion.span>
+                    {t("hero.ctaShop")}
+                  </Link>
+                </Button>
+              </div>
+
+              <LiveServerStatus className="mt-6 sm:mt-8" />
+            </div>
+
+            <TournamentChampion
+              className={`transition-all delay-300 duration-1000 ease-out ${mounted ? "translate-x-0 opacity-100" : "translate-x-16 opacity-0"
+                }`}
+            />
           </div>
         </div>
       </ParallaxSection>
 
-      {/* Clip Section - Background Video Between Sections */}
-      <ParallaxSection
-        className="relative h-[60vh] min-h-[360px] overflow-hidden sm:h-[70vh] sm:min-h-[420px] md:h-[80vh] md:min-h-[520px]"
-        renderBackground={(progress) => (
-          <div className="absolute inset-0">
-            <VideoParallaxBackdrop
-              progress={progress}
-              videoId="ccx7DrhsdbQ"
-              start={10}
-              title="CoralMC Clip"
-              overlayClassName="bg-black/55"
-            />
-            <WavyEdge
-              position="top"
-              heightClassName="h-[48px] sm:h-[56px] md:h-[64px]"
-              borderClassName="text-[#072434] opacity-35"
-              borderOffsetClassName="translate-y-[6px]"
-              fillClassName="text-[var(--bg-primary)]"
-            />
-            <WavyEdge
-              position="bottom"
-              heightClassName="h-[48px] sm:h-[56px] md:h-[64px]"
-              borderClassName="text-[#072434] opacity-35"
-              borderOffsetClassName="-translate-y-[6px]"
-              fillClassName="text-[var(--bg-primary)]"
-            />
-          </div>
-        )}
-      >
-        <div className="relative h-full" />
-      </ParallaxSection>
+      <Reveal className="relative px-4 py-10 sm:py-14 md:py-20">
+        <div className="container mx-auto">
+          <HowItWorksSection />
+        </div>
+      </Reveal>
 
-      {/* Features Section */}
-      <ParallaxSection
-        className="container mx-auto px-4 py-20 sm:py-28 md:py-32"
-        renderBackground={(progress) => (
-          <div className="absolute inset-0">
-            <SoftParallaxBlobs progress={progress} />
-          </div>
-        )}
-      >
-        <WhyChooseSection features={landingFeatures} />
-      </ParallaxSection>
+      <SectionWave />
+
+      <Reveal className="relative px-4 py-16 sm:py-20 md:py-28">
+        <div className="container mx-auto">
+          <AnimatedStats />
+        </div>
+      </Reveal>
+
+      <SectionWave />
+
+      <Reveal className="relative px-4 py-10 sm:py-14 md:py-20">
+        <div className="container mx-auto">
+          <WhyChooseSection features={landingFeatures} />
+        </div>
+      </Reveal>
+
+      <SectionWave />
+
+      <Reveal className="relative py-12 sm:py-16 md:py-24">
+        <ClipsOfTheWeekSection />
+      </Reveal>
+
+      <SectionWave />
+
+      <Reveal className="relative px-4 py-12 sm:py-16 md:py-24">
+        <div className="container mx-auto">
+          <CreatorsSection creators={landingCreators} />
+        </div>
+      </Reveal>
 
       <DiscordJoinSection
         href="/auth/signin"
-        title="Unisciti alla nostra community Discord"
+        title={t("discord.title")}
         description={
           <>
-            Entra ora nel nostro server Discord per rimanere aggiornato su tornei, eventi e novità esclusive.
+            {t("discord.desc1")}
             <br />
-            Connettiti con altri giocatori, forma team e partecipa a discussioni dedicate. Divertiti con noi!
+            {t("discord.desc2")}
           </>
         }
-        buttonLabel="Entra nel nostro server"
+        buttonLabel={t("discord.button")}
         icon={<FaDiscord className="h-5 w-5" />}
       />
     </div>

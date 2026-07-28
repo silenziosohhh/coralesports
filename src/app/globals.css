@@ -6,32 +6,41 @@
 
 @layer base {
   :root {
-    /* Palette (as per examples) */
-    --primary: hsl(202 93% 57%); /* Blue (full color) */
-    --color-hsl-secondary: hsl(214, 100%, 53%);
+    /* Palette derived from the CoralMC logo */
+    --primary: hsl(203 100% 50%);
+    /* #009DFF */
+    --color-hsl-secondary: hsl(184 100% 67%);
+    /* #57FFFF */
     --text-hsl-primary: hsl(0 0% 100%);
-    --highlight: hsl(51 96% 57%); /* Gold (full color) */
+    --highlight: hsl(212 100% 43%);
+    /* Deep logo blue */
 
     /* Shadcn/Tailwind tokens (HSL components, no hsl()) */
-    --background: 208 55% 9%; /* Dark navy */
-    --card: 222 84% 5%; /* Card surface */
-    --secondary: 217 33% 18%; /* Muted surface */
-    --muted: 217 33% 18%;
-    --border: 217 33% 18%;
-    --muted-foreground: 215 20% 65%;
+    --background: 216 100% 6.3%;
+    /* Deep navy from logo contrast */
+    --card: 210 72% 10%;
+    /* Card surface */
+    --secondary: 210 45% 17%;
+    /* Muted surface */
+    --muted: 210 45% 17%;
+    --border: 210 45% 17%;
+    --muted-foreground: 206 18% 70%;
     --destructive: 0 63% 31%;
 
-    /* Shadcn: keep accent subtle (not gold) */
-    --accent: 217 33% 18%;
+    /* Shadcn accent aligned to the logo blues */
+    --accent: 210 45% 17%;
 
     /* Backwards compatibility */
     /* Map token components to real CSS colors for legacy var(...) usage */
     --bg-primary: hsl(var(--background));
     --bg-secondary: hsl(var(--card));
     --color-primary: var(--primary);
-    --color-secondary: var(--color-hsl-secondary); /* Blue-600-ish for hovers/gradients */
-    --color-accent: var(--primary); /* Use blue for links/borders/active */
-    --color-highlight: var(--highlight); /* Gold only for key CTAs */
+    --color-secondary: var(--color-hsl-secondary);
+    /* Blue-600-ish for hovers/gradients */
+    --color-accent: var(--primary);
+    /* Use blue for links/borders/active */
+    --color-highlight: var(--highlight);
+    /* Gold only for key CTAs */
     --color-destructive: hsl(var(--destructive));
     --text-primary: var(--text-hsl-primary);
     --text-secondary: hsl(var(--muted-foreground));
@@ -47,7 +56,7 @@
     --accent-foreground: 0 0% 0%;
     --destructive-foreground: 0 0% 100%;
     --input: var(--secondary);
-    --ring: 202 93% 57%;
+    --ring: 203 100% 50%;
     --radius: 0.625rem;
 
     /* Legacy colors for gradual migration */
@@ -116,35 +125,81 @@
     --gh-opacity: 0.35;
     --gh-color: 255 255 255;
   }
+
   .theme {
     --font-heading: var(--font-sans);
     --font-sans: var(--font-sans);
   }
+
   .dark {
     /* Keep dark mode tokens in HSL-component format so Tailwind's hsl(var(--token)) works */
-    --background: 208 55% 9%;
+    --background: 216 100% 6.3%;
     --foreground: 0 0% 100%;
-    --card: 222 84% 5%;
+    --card: 210 72% 10%;
     --card-foreground: 0 0% 100%;
-    --popover: 222 84% 5%;
+    --popover: 210 72% 10%;
     --popover-foreground: 0 0% 100%;
-    --secondary: 217 33% 18%;
+    --secondary: 210 45% 17%;
     --secondary-foreground: 0 0% 100%;
-    --muted: 217 33% 18%;
-    --muted-foreground: 215 20% 65%;
-    --accent: 217 33% 18%;
+    --muted: 210 45% 17%;
+    --muted-foreground: 206 18% 70%;
+    --accent: 210 45% 17%;
     --accent-foreground: 0 0% 0%;
     --destructive: 0 63% 31%;
-    --border: 217 33% 18%;
-    --input: 217 33% 18%;
-    --ring: 202 93% 57%;
+    --border: 210 45% 17%;
+    --input: 210 45% 17%;
+    --ring: 203 100% 50%;
   }
+
   body {
     background: var(--bg-primary);
     color: var(--text-primary);
     font-feature-settings: "rlig" 1, "calt" 1;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     text-rendering: geometricPrecision;
+  }
+
+  /* NB: il focus ring globale è definito in fondo al file (*:focus-visible). */
+
+  /* Consistent interaction affordances */
+  a,
+  button {
+    transition:
+      color 200ms ease,
+      background-color 200ms ease,
+      border-color 200ms ease,
+      opacity 200ms ease,
+      transform 200ms ease;
+  }
+  a:hover,
+  button:hover {
+    cursor: pointer;
+  }
+  :disabled,
+  [aria-disabled="true"] {
+    cursor: not-allowed;
+  }
+
+  /* Reserve intrinsic space so images never cause layout shift (low CLS) */
+  img {
+    height: auto;
+  }
+
+  /* Branded text selection */
+  ::selection {
+    background: color-mix(in srgb, hsl(var(--ring)) 45%, transparent);
+    color: #fff;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }
 
@@ -179,7 +234,7 @@
     background-color: color-mix(in srgb, var(--darkslategray-200) 72%, transparent);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(33, 167, 255, 0.22);
+    border: 1px solid rgb(2, 68, 112);
     border-radius: 0.75rem;
     box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
   }
@@ -268,6 +323,7 @@
   0% {
     background-position: -1000px 0;
   }
+
   100% {
     background-position: 1000px 0;
   }
@@ -275,12 +331,10 @@
 
 .animate-shimmer {
   animation: shimmer 3s infinite linear;
-  background: linear-gradient(
-    to right,
-    transparent 0%,
-    var(--deepskyblue-800) 50%,
-    transparent 100%
-  );
+  background: linear-gradient(to right,
+      transparent 0%,
+      var(--deepskyblue-800) 50%,
+      transparent 100%);
   background-size: 1000px 100%;
 }
 
@@ -288,12 +342,15 @@
   0% {
     transform: translate(0px, 0px) scale(1);
   }
+
   33% {
     transform: translate(30px, -50px) scale(1.1);
   }
+
   66% {
     transform: translate(-20px, 20px) scale(0.9);
   }
+
   100% {
     transform: translate(0px, 0px) scale(1);
   }
@@ -312,10 +369,13 @@
 }
 
 @keyframes gradient {
-  0%, 100% {
+
+  0%,
+  100% {
     background-size: 200% 200%;
     background-position: left center;
   }
+
   50% {
     background-size: 200% 200%;
     background-position: right center;
@@ -326,8 +386,90 @@
   animation: gradient 3s ease infinite;
 }
 
-/* Focus Styles */
-*:focus-visible {
+@keyframes cinematic-zoom {
+  0% {
+    transform: scale(1.06);
+  }
+
+  100% {
+    transform: scale(1.14);
+  }
+}
+
+.animate-cinematic-zoom {
+  animation: cinematic-zoom 14s ease-out infinite alternate;
+  transform-origin: center center;
+  will-change: transform;
+}
+
+/* Nastro trasportatore delle clip: il track contiene due copie della fila,
+   quindi -50% riporta esattamente al punto di partenza (loop senza stacchi). */
+@keyframes clips-conveyor {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.clips-conveyor {
+  animation: clips-conveyor var(--clips-conveyor-duration, 90s) linear infinite;
+  will-change: transform;
+}
+
+/* Il nastro si ferma sotto al cursore, così si può guardare la clip ingrandita. */
+.clips-conveyor:hover,
+.clips-conveyor--paused {
+  animation-play-state: paused;
+}
+
+@font-face {
+  font-family: "Minecraft";
+  src: url("https://fonts.cdnfonts.com/s/14988/Minecraft.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ─── Minecraft Nametag ──────────────────────────────────────────────────── */
+/* Authentic floating nametag: semi-transparent black bg, pixel shadows,      */
+/* no border, rotated +6° toward bottom-right, generous letter padding.       */
+
+.minecraft-nametag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  /* generous horizontal padding: ~2× the character width on each side */
+  padding: 0.55rem 2.2rem;
+  background-color: rgba(0, 0, 0, 0.30);
+  /* no border — real MC nametags are just a translucent black slab */
+  border: none;
+  font-family: "Minecraft", "Courier New", monospace;
+  font-size: 26px;
+  line-height: 1.2;
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: grayscale;
+  image-rendering: pixelated;
+  white-space: nowrap;
+  /* tilt toward bottom-right, pivot from left-center; nudge left & down */
+  transform: rotate(6deg) translateX(20px) translateY(20px);
+  transform-origin: left center;
+}
+
+.minecraft-nametag-text {
+  color: #ffffff;
+  text-shadow: 3px 3px 0 #3f3f3f;
+}
+
+.minecraft-nametag-text--gold {
+  color: #ffff55;
+  text-shadow: 3px 3px 0 #3f3f00;
+}
+
+/* Focus Styles — `.outline-none` opta fuori (questa regola è fuori dai layer e batte le utility) */
+*:focus-visible:not(.outline-none) {
   outline: 2px solid var(--deepskyblue-100);
   outline-offset: 2px;
 }
@@ -338,3 +480,60 @@
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;
 }
+
+/* ─── Ocean Wave Divider ──────────────────────────────────────────────────── */
+/* Fill colour = #000d20 baked directly into the SVG data URI.                */
+/* No filter needed – the colour is pixel-perfect.                            */
+
+.ocean {
+  height: 120px;
+  width: 100%;
+}
+
+.wave {
+  /* SVG path from s3.cdpn.io/85486/wave.svg – fill replaced with #000d20 */
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1600' height='198'%3E%3Cpath fill='%23000d20' fill-rule='evenodd' d='M.005 121C311 121 409.898-.25 811 0c400 0 500 121 789 121v77H0s.005-48 .005-77z' transform='matrix(-1 0 0 1 1600 0)'/%3E%3C/svg%3E") repeat-x;
+  position: absolute;
+  bottom: 0;
+  width: 6400px;
+  height: 198px;
+  animation: ocean-wave 7s cubic-bezier(0.36, 0.45, 0.63, 0.53) infinite;
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
+}
+
+.wave--slow {
+  bottom: 0;
+  animation:
+    ocean-wave 7s cubic-bezier(0.36, 0.45, 0.63, 0.53) -0.125s infinite,
+    ocean-swell 7s ease -1.25s infinite;
+  opacity: 0.5;
+}
+
+@keyframes ocean-wave {
+  0% {
+    margin-left: 0;
+  }
+
+  100% {
+    margin-left: -1600px;
+  }
+}
+
+@keyframes ocean-swell {
+
+  0%,
+  100% {
+    transform: translate3d(0, -25px, 0);
+  }
+
+  50% {
+    transform: translate3d(0, 5px, 0);
+  }
+}
+
+/* ─── Section wave divider (decorative, tema Coral) ───────────────────────── */
+.section-wave path {
+  stroke: url(#section-wave-gradient);
+}
+

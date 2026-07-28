@@ -22,6 +22,17 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning className={cn("font-sans", inter.variable)}>
+      <head>
+        {/*
+          Precarico l'host della Skin API (Avyra): tutte le skin — campione hero
+          e card creator — arrivano da qui. Con preconnect avviamo subito DNS +
+          handshake TLS, così quando la prima <img> parte la connessione è già
+          calda e la skin compare prima. dns-prefetch è il fallback per i browser
+          che ignorano il preconnect cross-origin.
+        */}
+        <link rel="preconnect" href="https://avyra-skin-api.vercel.app" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://avyra-skin-api.vercel.app" />
+      </head>
       <body className="font-sans antialiased">
         <Providers>
           <Navbar />
