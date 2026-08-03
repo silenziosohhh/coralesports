@@ -4,9 +4,14 @@ import { useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Ticket } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { CompetitionPageShell } from "@/components/competition/competition-page-shell";
 import { buildCustomQrDataUrl } from "@/lib/qr";
+import { CoralLoadingScreen } from "@/components/ui/coral-loading-screen";
+
+const PANEL =
+  "relative overflow-hidden rounded-[28px] border-2 border-white/20 bg-[#061b3b]/68 shadow-[0_26px_70px_rgba(0,20,65,0.34)] backdrop-blur-2xl";
 
 type InvitePayload = {
   invitation: {
@@ -93,92 +98,127 @@ export default function TournamentInvitePage() {
   };
 
   if (loading) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center text-[var(--text-secondary)]">Caricamento...</div>
-      </div>
-    );
+    return <CoralLoadingScreen messageKey="loading.invite" />;
   }
 
   if (!payload) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center text-[var(--text-secondary)]">Invito non disponibile.</div>
-      </div>
+      <CompetitionPageShell
+        eyebrow="Invito a un torneo"
+        title="Invito"
+        accent="non disponibile"
+        description="Questo invito non esiste più, è scaduto oppure il link non è corretto."
+      >
+        <article className={`${PANEL} mx-auto max-w-2xl px-6 py-16 text-center`}>
+          <div
+            aria-hidden
+            className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(0,157,255,0.14),transparent_52%)]"
+          />
+          <Ticket className="relative mx-auto h-10 w-10 text-cyan-300/60" />
+          <h2 className="relative mt-5 text-2xl font-black text-white">Invito non trovato</h2>
+          <p className="relative mx-auto mt-3 max-w-lg text-sm leading-relaxed text-white/45">
+            Chiedi a chi ti ha invitato di generare un nuovo link.
+          </p>
+        </article>
+      </CompetitionPageShell>
     );
   }
 
   const inv = payload.invitation;
   const isRecipient = session?.user?.id ? inv.invitedUserId === session.user.id : payload.viewer.isRecipient;
+  const canRespond = !responding && inv.status === "PENDING" && !(status === "authenticated" && !isRecipient);
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mx-auto max-w-2xl space-y-6">
-        <Card className="glass-card border-cyan/20">
-          <CardHeader>
-            <CardTitle className="text-2xl text-white">Invito Torneo</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="text-sm text-[var(--text-secondary)]">
-              Torneo: <span className="font-semibold text-white">{inv.tournament.name}</span> • Modalità{" "}
-              <span className="font-semibold text-white">{inv.tournament.teamMode}</span>
-            </div>
-            <div className="text-sm text-[var(--text-secondary)]">
-              Invitato da:{" "}
-              <span className="font-semibold text-white">
-                {inv.invitedBy.discordTag || inv.invitedBy.name || inv.invitedBy.id}
-              </span>
-            </div>
-            <div className="text-sm text-[var(--text-secondary)]">
-              Stato invito: <span className="font-semibold text-white">{inv.status}</span>
-            </div>
-            <div className="text-sm text-[var(--text-secondary)]">
-              Scade:{" "}
-              <span className="font-semibold text-white">
-                {new Date(inv.expiresAt).toLocaleString("it-IT")}
-              </span>
-            </div>
+    <CompetitionPageShell
+      eyebrow="Invito a un torneo"
+      title={inv.tournament.name}
+      description={`Sei stato invitato da ${
+        inv.invitedBy.discordTag || inv.invitedBy.name || inv.invitedBy.id
+      } a partecipare in modalità ${inv.tournament.teamMode}.`}
+      action={
+        <Button
+          variant="outline"
+          size="lg"
+          className="h-12 rounded-xl px-6 font-black"
+          onClick={() => router.push(`/tournaments/${inv.tournament.id}`)}
+        >
+          Vai al torneo
+        </Button>
+      }
+    >
+      <article className={`${PANEL} mx-auto max-w-2xl p-6 sm:p-8`}>
+        <div aria-hidden className="absolute -right-24 -top-24 h-56 w-56 rounded-full bg-[#57ffff]/16 blur-3xl" />
 
-            <div className="flex flex-wrap gap-2 pt-2">
-              <Button
-                variant="cyan"
-                onClick={() => respond("accept")}
-                disabled={responding || inv.status !== "PENDING" || (status === "authenticated" && !isRecipient)}
-              >
-                Accetta
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => respond("decline")}
-                disabled={responding || inv.status !== "PENDING" || (status === "authenticated" && !isRecipient)}
-              >
-                Rifiuta
-              </Button>
-              <Button
-                variant="outline"
-                onClick={async () => {
-                  await navigator.clipboard.writeText(inviteUrl);
-                  toast.success("Link copiato!");
-                }}
-              >
-                Copia link
-              </Button>
-              <Button variant="ghost" onClick={() => router.push(`/tournaments/${inv.tournament.id}`)}>
-                Vai al torneo
-              </Button>
-            </div>
+        <div className="relative flex items-center gap-3">
+          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-white/[0.06] text-[#57ffff]">
+            <Ticket className="h-5 w-5" />
+          </span>
+          <h2 className="text-2xl font-black tracking-[-0.03em] text-white">Dettagli invito</h2>
+        </div>
 
-            {qr && (
-              <div className="pt-4">
-                <div className="mb-2 text-sm font-semibold text-white">QR Code</div>
-                <div className="flex justify-center">
-                  <img src={qr} alt="QR Code invito" className="h-[280px] w-[280px] rounded bg-white p-2" />
-                </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+        <div className="relative mt-6 space-y-2">
+          {[
+            { label: "Torneo", value: inv.tournament.name },
+            { label: "Modalità", value: inv.tournament.teamMode },
+            {
+              label: "Invitato da",
+              value: inv.invitedBy.discordTag || inv.invitedBy.name || inv.invitedBy.id,
+            },
+            { label: "Stato invito", value: inv.status },
+            { label: "Scade il", value: new Date(inv.expiresAt).toLocaleString("it-IT") },
+          ].map(({ label, value }) => (
+            <div
+              key={label}
+              className="flex items-center justify-between gap-3 rounded-2xl border border-white/14 bg-white/[0.05] px-4 py-3"
+            >
+              <span className="text-sm font-semibold text-white/58">{label}</span>
+              <span className="text-right font-black text-white">{value}</span>
+            </div>
+          ))}
+        </div>
+
+        <div className="relative mt-6 flex flex-wrap gap-2">
+          <Button
+            variant="cyan"
+            size="lg"
+            className="rounded-xl font-black"
+            onClick={() => respond("accept")}
+            disabled={!canRespond}
+          >
+            Accetta
+          </Button>
+          <Button
+            variant="outline"
+            size="lg"
+            className="rounded-xl font-black"
+            onClick={() => respond("decline")}
+            disabled={!canRespond}
+          >
+            Rifiuta
+          </Button>
+          <Button
+            variant="outline"
+            size="lg"
+            className="rounded-xl font-black"
+            onClick={async () => {
+              await navigator.clipboard.writeText(inviteUrl);
+              toast.success("Link copiato!");
+            }}
+          >
+            Copia link
+          </Button>
+        </div>
+
+        {qr && (
+          <div className="relative mt-8">
+            <div className="text-[10px] font-black uppercase tracking-[0.14em] text-white/52">QR code</div>
+            <div className="mt-3 flex justify-center rounded-2xl border border-white/14 bg-white/[0.05] p-5">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={qr} alt="QR code dell'invito" className="h-[280px] w-[280px] rounded-xl bg-white p-2" />
+            </div>
+          </div>
+        )}
+      </article>
+    </CompetitionPageShell>
   );
 }

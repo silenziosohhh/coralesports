@@ -5,32 +5,40 @@ import Image from "next/image";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { FaDiscord, FaInstagram, FaTiktok, FaTwitch } from "react-icons/fa";
+import { Cookie, ShoppingBag } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useCookieConsent } from "@/lib/cookie-consent";
+import { useI18n } from "@/lib/i18n";
+import type { ReactElement } from "react";
+import { DISCORD_INVITE_URL } from "@/lib/site-links";
 
-type FooterLink = { label: string; href: string };
+type FooterLink = { labelKey: string; href: string };
 
 const SERVER_IP = "play.coralmc.it";
 
 const quickLinks: FooterLink[] = [
-  { label: "Home", href: "/" },
-  { label: "Tornei", href: "/tournaments" },
-  { label: "Teams", href: "/teams" },
-  { label: "Classifica", href: "/leaderboard" },
-  { label: "Store", href: "/store" },
+  { labelKey: "nav.home", href: "/" },
+  { labelKey: "nav.tournaments", href: "/tournaments" },
+  { labelKey: "nav.teams", href: "/teams" },
+  { labelKey: "nav.leaderboard", href: "/leaderboard" },
 ];
 
-const socialIcons: { label: string; href: string; icon: JSX.Element }[] = [
+const socialIcons: { label: string; href: string; icon: ReactElement }[] = [
   { label: "Instagram", href: "#", icon: <FaInstagram className="h-4 w-4" /> },
   { label: "Twitch", href: "#", icon: <FaTwitch className="h-4 w-4" /> },
   { label: "TikTok", href: "#", icon: <FaTiktok className="h-4 w-4" /> },
 ];
 
 export function Footer({ className }: { className?: string }) {
+  const { openPreferences } = useCookieConsent();
+  const { t } = useI18n();
+
   const copyIp = async () => {
     try {
       await navigator.clipboard.writeText(SERVER_IP);
-      toast.success("IP copiato negli appunti", { description: SERVER_IP });
+      toast.success(t("server.copied"), { description: SERVER_IP });
     } catch {
-      toast.error("Impossibile copiare l'IP");
+      toast.error(t("server.copyError"));
     }
   };
 
@@ -50,7 +58,6 @@ export function Footer({ className }: { className?: string }) {
 
       <div className="relative z-10 container mx-auto px-4 pb-8 pt-10 md:pt-12">
         <div className="grid gap-12 md:grid-cols-3 md:items-start">
-          {/* Brand + IP server */}
           <div className="space-y-5">
             <div className="flex items-center gap-3">
               <div className="relative h-10 w-10 flex-shrink-0">
@@ -62,15 +69,12 @@ export function Footer({ className }: { className?: string }) {
               </span>
             </div>
             <p className="max-w-sm text-xs leading-relaxed text-white/55">
-              CoralMC Esports è l&apos;arena competitiva definitiva di Minecraft. Forma il tuo team,
-              sfida i migliori giocatori nei tornei ufficiali e scala le classifiche ELO fino alla vetta.
-              Bracket avanzati, premi reali e una community che vive per la competizione: qui ogni
-              partita conta e ogni vittoria ti avvicina alla gloria.
+              {t("footer.description")}
             </p>
             <button
               type="button"
               onClick={copyIp}
-              aria-label={`Copia l'IP del server ${SERVER_IP}`}
+              aria-label={`${t("server.copyAria")} ${SERVER_IP}`}
               className="group inline-flex items-center gap-2 rounded-xl px-3.5 py-2 text-xs font-bold text-white transition-all duration-300 hover:-translate-y-0.5"
               style={{
                 border: "1px solid rgba(255,255,255,0.12)",
@@ -99,11 +103,14 @@ export function Footer({ className }: { className?: string }) {
             </button>
           </div>
 
-          {/* Community (centrata) */}
           <div className="flex flex-col items-center space-y-5 text-center md:mt-8">
-            <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-white/80">Community</h3>
+            <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-white/80">
+              {t("footer.community")}
+            </h3>
             <a
-              href="#"
+              href={DISCORD_INVITE_URL}
+              target="_blank"
+              rel="noreferrer"
               className="inline-flex items-center gap-2 rounded-xl px-3.5 py-2 text-sm font-bold text-white transition-all duration-300 hover:-translate-y-0.5"
               style={{
                 border: "1px solid rgba(88,101,242,0.4)",
@@ -111,7 +118,7 @@ export function Footer({ className }: { className?: string }) {
               }}
             >
               <FaDiscord className="h-4 w-4 text-[#5865F2]" />
-              <span>Entra su Discord</span>
+              <span>{t("footer.joinDiscord")}</span>
             </a>
             <div className="flex items-center justify-center gap-3 text-white/55">
               {socialIcons.map((s) => (
@@ -131,21 +138,33 @@ export function Footer({ className }: { className?: string }) {
             </div>
           </div>
 
-          {/* Navigazione (a destra) */}
           <div className="space-y-5 md:text-right">
-            <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-white/80">Navigazione</h3>
+            <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-white/80">
+              {t("footer.navigation")}
+            </h3>
             <ul className="space-y-3 text-sm text-white/60">
               {quickLinks.map((l) => (
-                <li key={l.label}>
+                <li key={l.labelKey}>
                   <Link className="transition-colors hover:text-[var(--color-accent)]" href={l.href}>
-                    {l.label}
+                    {t(l.labelKey)}
                   </Link>
                 </li>
               ))}
             </ul>
+            <Button
+              variant="cyan"
+              size="lg"
+              className="h-[66px] w-full max-w-[350px] gap-3 rounded-xl border-[5px] px-8 text-lg md:ml-auto [&_svg]:h-5 [&_svg]:w-5"
+              asChild
+            >
+              <Link href="/store">
+                <ShoppingBag aria-hidden="true" />
+                <span>{t("footer.store")}</span>
+              </Link>
+            </Button>
             <div className="pt-6 text-xs text-white/45">
-              <Link href="https://sildev.dev" className="transition-colors hover:text-white">
-                Website by Sildev
+              <Link href="/credits" className="transition-colors hover:text-white">
+                {t("footer.credits")}
               </Link>
             </div>
           </div>
@@ -153,13 +172,25 @@ export function Footer({ className }: { className?: string }) {
 
         <div className="my-10 h-px w-full bg-white/10" />
 
-        <div className="flex flex-col gap-5 text-xs text-white/45 md:flex-row md:items-center md:justify-between">
+        <div
+          className="flex flex-col gap-5 text-xs text-white/45 md:flex-row md:items-center md:justify-between"
+        >
           <div className="flex items-center gap-3">
             <Image src="/logo.png" alt="CoralMC" width={26} height={26} className="h-6 w-6 object-contain" />
             <span className="font-semibold text-white/90">CoralMC Esports</span>
           </div>
-          <div className="text-center">© {new Date().getFullYear()} TierList CoralMC. Tutti i diritti riservati.</div>
-          <div className="md:text-right">v1.7.3</div>
+          <div className="text-center">{t("footer.rights", { year: new Date().getFullYear() })}</div>
+          <div className="flex items-center gap-4 md:justify-end">
+            <button
+              type="button"
+              onClick={openPreferences}
+              className="inline-flex items-center gap-1.5 transition-colors hover:text-white"
+            >
+              <Cookie className="h-3.5 w-3.5" />
+              {t("cookie.manage")}
+            </button>
+            <span>v1.7.3</span>
+          </div>
         </div>
       </div>
     </footer>

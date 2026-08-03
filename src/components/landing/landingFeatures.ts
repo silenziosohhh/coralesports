@@ -3,10 +3,8 @@ import type { LucideProps } from "lucide-react";
 import { Gift, Trophy, Users } from "lucide-react";
 
 export type LandingFeature = {
-  /** Stable identifier — used for i18n keys and image lookup. */
   slug: "brackets" | "teams" | "prizes";
   icon: ComponentType<LucideProps>;
-  /** Fallback title (translated at render via feature.<slug>.title). */
   title: string;
   description: string;
   color: string;

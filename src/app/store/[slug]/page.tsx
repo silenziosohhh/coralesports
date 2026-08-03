@@ -4,8 +4,10 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { formatPrice } from "@/lib/money";
 import { Button } from "@/components/ui/button";
+import { CompetitionPageShell } from "@/components/competition/competition-page-shell";
 
-export default async function StoreProductPage({ params }: { params: { slug: string } }) {
+export default async function StoreProductPage(props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   const product = await prisma.shopProduct.findFirst({
     where: { slug: params.slug, isActive: true },
     select: {
@@ -32,86 +34,88 @@ export default async function StoreProductPage({ params }: { params: { slug: str
   const priceLabel = formatPrice(product.priceCents, product.currency);
 
   return (
-    <div className="min-h-screen bg-[var(--bg-primary)] py-10">
-      <div className="container mx-auto px-4">
-        <div className="mb-8 flex items-center justify-between gap-4">
-          <div className="text-sm text-white/60">
-            <Link href="/store" className="hover:text-white">
-              Store
-            </Link>
-            {product.category ? (
-              <>
-                <span className="mx-2">/</span>
-                <span className="text-white/80">{product.category.name}</span>
-              </>
-            ) : null}
-          </div>
-          <Button variant="outline" asChild className="border-white/15 bg-white/5 text-white hover:bg-white/10">
-            <Link href="/store">← Torna allo store</Link>
-          </Button>
-        </div>
-
-        <div className="grid gap-10 lg:grid-cols-2 lg:items-start">
-          <div className="overflow-hidden rounded-2xl border border-white/10 bg-[var(--bg-secondary)]/70">
-            <div className="relative aspect-[16/11] w-full">
-              {mainImage ? (
-                <Image src={mainImage} alt={product.name} fill sizes="(max-width: 1024px) 100vw, 50vw" className="object-cover" />
-              ) : (
-                <div className="absolute inset-0 bg-[linear-gradient(135deg,var(--bg-secondary)_0%,rgba(0,183,255,0.15)_50%,var(--bg-secondary)_100%)]" />
-              )}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
-            </div>
-
-            {galleryUrls.length > 0 ? (
-              <div className="grid grid-cols-4 gap-2 p-4">
-                {galleryUrls.slice(0, 4).map((url) => (
-                  <div key={url} className="relative aspect-[16/11] overflow-hidden rounded-lg border border-white/10">
-                    <Image src={url} alt="" fill sizes="25vw" className="object-cover" />
-                  </div>
-                ))}
-              </div>
-            ) : null}
+    <CompetitionPageShell
+      eyebrow={product.category ? `Store · ${product.category.name}` : "Store CoralMC"}
+      title={product.name}
+      description={
+        product.shortDescription ??
+        "Articolo virtuale utilizzabile esclusivamente in-game su CoralMC."
+      }
+      action={
+        <Button variant="outline" asChild size="lg" className="h-12 rounded-xl px-6 font-black">
+          <Link href="/store">← Torna allo store</Link>
+        </Button>
+      }
+    >
+      <div className="grid gap-8 lg:grid-cols-2 lg:items-start">
+        <article
+          data-reveal="left"
+          className="relative overflow-hidden rounded-[28px] border-2 border-white/20 bg-[#061b3b]/68 shadow-[0_26px_70px_rgba(0,20,65,0.34)] backdrop-blur-2xl"
+        >
+          <div className="relative aspect-[16/11] w-full">
+            {mainImage ? (
+              <Image
+                src={mainImage}
+                alt={product.name}
+                fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                className="object-cover"
+              />
+            ) : (
+              <div className="absolute inset-0 bg-[linear-gradient(135deg,#03142b_0%,rgba(0,183,255,0.18)_50%,#03142b_100%)]" />
+            )}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
           </div>
 
-          <div>
-            <h1 className="text-4xl font-black tracking-tight text-white">{product.name}</h1>
-            {product.shortDescription ? (
-              <p className="mt-3 text-pretty text-white/70">{product.shortDescription}</p>
-            ) : null}
-
-            <div className="mt-6 rounded-2xl border border-white/10 bg-[var(--bg-secondary)]/60 p-6">
-              <div className="flex items-end justify-between gap-4">
-                <div>
-                  <div className="text-xs font-semibold tracking-widest text-white/60">PREZZO</div>
-                  <div className="mt-1 text-3xl font-black text-[var(--color-accent)]">{priceLabel}</div>
+          {galleryUrls.length > 0 ? (
+            <div className="grid grid-cols-4 gap-2 p-4">
+              {galleryUrls.slice(0, 4).map((url) => (
+                <div key={url} className="relative aspect-[16/11] overflow-hidden rounded-lg border border-white/14">
+                  <Image src={url} alt="" fill sizes="25vw" className="object-cover" />
                 </div>
-                <Button variant="highlight" className="h-12 px-6 text-base" asChild>
-                  <Link href="/auth/signin">Acquista</Link>
-                </Button>
-              </div>
-
-              <div className="mt-4 text-sm text-white/70">
-                {product.deliveryHint ?? "Consegna in-game automatica o assistita dallo staff dopo l'acquisto."}
-              </div>
+              ))}
             </div>
+          ) : null}
+        </article>
 
-            <div className="mt-8 space-y-3">
-              <div className="text-xs font-semibold tracking-widest text-white/60">DETTAGLI</div>
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-6 text-white/80">
-                {product.description ? (
-                  <div className="whitespace-pre-wrap leading-relaxed">{product.description}</div>
-                ) : (
-                  <div className="text-white/60">Nessun dettaglio aggiuntivo.</div>
-                )}
+        <article
+          data-reveal="right"
+          data-reveal-delay="0.12"
+          className="relative overflow-hidden rounded-[28px] border-2 border-white/20 bg-[#061b3b]/68 p-6 shadow-[0_26px_70px_rgba(0,20,65,0.34)] backdrop-blur-2xl sm:p-8"
+        >
+          <div aria-hidden className="absolute -right-24 -top-24 h-56 w-56 rounded-full bg-[#57ffff]/16 blur-3xl" />
+
+          <div className="relative rounded-2xl border border-white/14 bg-white/[0.06] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
+            <div className="flex flex-wrap items-end justify-between gap-4">
+              <div>
+                <div className="text-[10px] font-black uppercase tracking-[0.14em] text-white/52">Prezzo</div>
+                <div className="mt-1 text-4xl font-black tracking-[-0.04em] text-[#57ffff]">{priceLabel}</div>
               </div>
+              <Button variant="highlight" size="lg" className="h-12 rounded-xl px-6 font-black" asChild>
+                <Link href="/auth/signin">Acquista</Link>
+              </Button>
             </div>
+            <p className="mt-4 text-sm leading-relaxed text-white/62">
+              {product.deliveryHint ?? "Consegna in-game automatica o assistita dallo staff dopo l'acquisto."}
+            </p>
+          </div>
 
-            <div className="mt-8 rounded-2xl border border-white/10 bg-white/5 p-6 text-sm text-white/70">
-              Acquistando confermi che si tratta di articoli virtuali utilizzabili esclusivamente in-game su CoralMC.
+          <div className="relative mt-6">
+            <div className="text-[10px] font-black uppercase tracking-[0.14em] text-white/52">Dettagli</div>
+            <div className="mt-3 rounded-2xl border border-white/14 bg-white/[0.05] p-5 text-white/78">
+              {product.description ? (
+                <div className="whitespace-pre-wrap leading-relaxed">{product.description}</div>
+              ) : (
+                <div className="text-white/48">Nessun dettaglio aggiuntivo.</div>
+              )}
             </div>
           </div>
-        </div>
+
+          <p className="relative mt-6 rounded-2xl border border-white/14 bg-white/[0.05] p-5 text-sm leading-relaxed text-white/62">
+            Acquistando confermi che si tratta di articoli virtuali utilizzabili esclusivamente in-game su CoralMC.
+          </p>
+        </article>
       </div>
-    </div>
+    </CompetitionPageShell>
   );
 }

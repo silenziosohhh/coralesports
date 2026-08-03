@@ -1,22 +1,11 @@
 "use client";
 
-/**
- * Sfondo ambientale per la landing: gradienti radiali morbidi posizionati a
- * diverse profondità di scroll. Man mano che l'utente scorre, la pagina passa
- * sopra glow di colori diversi (blu → ciano → viola → blu), così il fondo
- * "cambia" invece di restare un blocco scuro piatto.
- *
- * Puramente decorativo: absolute, dietro al contenuto, non intercetta i click.
- */
 
 type Blob = {
-  /** Posizione verticale in % dell'altezza totale della pagina. */
   top: string;
-  /** Ancoraggio orizzontale. */
   side: "left" | "right";
   offset: string;
   size: string;
-  /** Gradiente radiale del glow. */
   gradient: string;
   delay?: string;
 };

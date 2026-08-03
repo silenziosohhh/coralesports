@@ -43,8 +43,8 @@ export default async function AdminUsersPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg-primary)] py-12">
-      <div className="container mx-auto px-4">
+    <main className="admin-page-shell min-h-screen px-4 pb-32 pt-28 sm:pt-32">
+      <div className="admin-page-content mx-auto w-full max-w-7xl">
         <div className="mb-8 flex items-center justify-between">
           <div>
             <h1 className="page-title mb-2 text-4xl font-bold">Gestione Utenti</h1>
@@ -55,7 +55,6 @@ export default async function AdminUsersPage() {
           </Button>
         </div>
 
-        {/* Stats */}
         <div className="mb-8 grid gap-4 md:grid-cols-4">
           <Card className="glass-card border-cyan/20">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -98,7 +97,6 @@ export default async function AdminUsersPage() {
           </Card>
         </div>
 
-        {/* Users List */}
         <Card className="glass-card border-cyan/20">
           <CardHeader>
             <CardTitle>Tutti gli Utenti</CardTitle>
@@ -109,7 +107,7 @@ export default async function AdminUsersPage() {
               {users.map((user) => (
                 <div
                   key={user.id}
-                  className="flex items-center justify-between rounded-lg border border-cyan/10 bg-slate-dark/50 p-4"
+                  className="border-cyan/10 bg-slate-dark/50 flex items-center justify-between rounded-lg border p-4"
                 >
                   <div className="flex items-center gap-4">
                     <Avatar>
@@ -124,8 +122,8 @@ export default async function AdminUsersPage() {
                             user.role === "SUPER_ADMIN"
                               ? "destructive"
                               : user.role === "ADMIN"
-                              ? "default"
-                              : "secondary"
+                                ? "default"
+                                : "secondary"
                           }
                         >
                           {user.role}
@@ -135,17 +133,19 @@ export default async function AdminUsersPage() {
                             user.status === "ACTIVE"
                               ? "default"
                               : user.status === "BANNED"
-                              ? "destructive"
-                              : "secondary"
+                                ? "destructive"
+                                : "secondary"
                           }
                         >
                           {user.status}
                         </Badge>
                       </div>
-                      <p className="text-xs text-gray/60">Discord: {user.discordTag || "N/A"}</p>
-                      <div className="mt-1 flex gap-4 text-xs text-gray/80">
+                      <p className="text-gray/60 text-xs">Discord: {user.discordTag || "N/A"}</p>
+                      <div className="text-gray/80 mt-1 flex gap-4 text-xs">
                         <span>ELO: {user.elo}</span>
-                        <span>W/L: {user.wins}/{user.losses}</span>
+                        <span>
+                          W/L: {user.wins}/{user.losses}
+                        </span>
                         <span>Teams: {user._count.teamMembers}</span>
                       </div>
                     </div>
@@ -166,6 +166,6 @@ export default async function AdminUsersPage() {
           </CardContent>
         </Card>
       </div>
-    </div>
+    </main>
   );
 }

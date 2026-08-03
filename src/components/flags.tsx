@@ -5,7 +5,6 @@ import type { Locale } from "@/lib/i18n";
 
 type FlagProps = { className?: string };
 
-/** Italy — vertical green / white / red. */
 function ItFlag({ className }: FlagProps) {
   return (
     <svg viewBox="0 0 3 2" className={className} aria-hidden preserveAspectRatio="xMidYMid slice">
@@ -16,7 +15,6 @@ function ItFlag({ className }: FlagProps) {
   );
 }
 
-/** France — vertical blue / white / red. */
 function FrFlag({ className }: FlagProps) {
   return (
     <svg viewBox="0 0 3 2" className={className} aria-hidden preserveAspectRatio="xMidYMid slice">
@@ -27,7 +25,6 @@ function FrFlag({ className }: FlagProps) {
   );
 }
 
-/** Germany — horizontal black / red / gold. */
 function DeFlag({ className }: FlagProps) {
   return (
     <svg viewBox="0 0 5 3" className={className} aria-hidden preserveAspectRatio="xMidYMid slice">
@@ -38,18 +35,6 @@ function DeFlag({ className }: FlagProps) {
   );
 }
 
-/** Russia — horizontal white / blue / red. */
-function RuFlag({ className }: FlagProps) {
-  return (
-    <svg viewBox="0 0 9 6" className={className} aria-hidden preserveAspectRatio="xMidYMid slice">
-      <rect width="9" height="2" y="0" fill="#ffffff" />
-      <rect width="9" height="2" y="2" fill="#0039A6" />
-      <rect width="9" height="2" y="4" fill="#D52B1E" />
-    </svg>
-  );
-}
-
-/** United Kingdom — Union Jack. */
 function GbFlag({ className }: FlagProps) {
   const id = useId();
   const s = `s-${id}`;
@@ -73,7 +58,6 @@ function GbFlag({ className }: FlagProps) {
   );
 }
 
-/** Rounded flag badge for a given locale. */
 export function Flag({ code, className }: { code: Locale; className?: string }) {
   const flag =
     code === "it" ? (
@@ -82,8 +66,6 @@ export function Flag({ code, className }: { code: Locale; className?: string }) 
       <FrFlag className="h-full w-full" />
     ) : code === "de" ? (
       <DeFlag className="h-full w-full" />
-    ) : code === "ru" ? (
-      <RuFlag className="h-full w-full" />
     ) : (
       <GbFlag className="h-full w-full" />
     );

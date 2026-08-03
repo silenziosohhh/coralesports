@@ -11,6 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
 
 export type TournamentSelectOption = {
   id: string;
@@ -27,6 +28,7 @@ export function TournamentSelectDropdown({
   clearParams = [],
   allowClear = false,
   paramKey = "tournament",
+  triggerClassName,
 }: {
   basePath: string;
   tournaments: TournamentSelectOption[];
@@ -34,6 +36,7 @@ export function TournamentSelectDropdown({
   clearParams?: string[];
   allowClear?: boolean;
   paramKey?: string;
+  triggerClassName?: string;
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -61,7 +64,7 @@ export function TournamentSelectDropdown({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" className="w-full justify-between">
+        <Button variant="outline" className={cn("w-full justify-between", triggerClassName)}>
           <span className="truncate">{label}</span>
         </Button>
       </DropdownMenuTrigger>

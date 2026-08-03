@@ -1,6 +1,6 @@
 "use client";
 
-import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef } from "react";
 import { cn } from "@/lib/utils";
 
 const PROCESS_SIZE = 128;
@@ -12,13 +12,36 @@ export type VideoIconHandle = {
   pause: () => void;
 };
 
-export const VideoIcon = forwardRef<VideoIconHandle, { src: string; className?: string }>(
-  ({ src, className }, ref) => {
+type VideoIconProps = {
+  src: string;
+  className?: string;
+  active?: boolean;
+};
+
+const ACTIVE_GRADIENT = [
+  [7, 139, 234],
+  [19, 174, 242],
+  [57, 215, 242],
+] as const;
+
+function activeGradientColor(progress: number) {
+  const segment = progress < 0.5 ? 0 : 1;
+  const localProgress = progress < 0.5 ? progress * 2 : (progress - 0.5) * 2;
+  const start = ACTIVE_GRADIENT[segment];
+  const end = ACTIVE_GRADIENT[segment + 1];
+
+  return start.map((channel, index) =>
+    Math.round(channel + (end[index] - channel) * localProgress),
+  );
+}
+
+export const VideoIcon = forwardRef<VideoIconHandle, VideoIconProps>(
+  ({ src, className, active = false }, ref) => {
     const videoRef = useRef<HTMLVideoElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const rafRef = useRef<number>();
+    const rafRef = useRef<number | undefined>(undefined);
 
-    const processFrame = () => {
+    const processFrame = useCallback(() => {
       const video = videoRef.current;
       const canvas = canvasRef.current;
       if (!video || !canvas) return;
@@ -37,18 +60,26 @@ export const VideoIcon = forwardRef<VideoIconHandle, { src: string; className?: 
         } else if (min > FEATHER_START) {
           data[i + 3] = Math.round(((WHITE_CUTOFF - min) / (WHITE_CUTOFF - FEATHER_START)) * data[i + 3]);
         }
-        data[i] = 255;
-        data[i + 1] = 255;
-        data[i + 2] = 255;
+        if (active) {
+          const pixelX = (i / 4) % PROCESS_SIZE;
+          const [red, green, blue] = activeGradientColor(pixelX / (PROCESS_SIZE - 1));
+          data[i] = red;
+          data[i + 1] = green;
+          data[i + 2] = blue;
+        } else {
+          data[i] = 255;
+          data[i + 1] = 255;
+          data[i + 2] = 255;
+        }
       }
 
       ctx.putImageData(frame, 0, 0);
-    };
+    }, [active]);
 
-    const loop = () => {
+    const loop = useCallback(() => {
       processFrame();
       rafRef.current = requestAnimationFrame(loop);
-    };
+    }, [processFrame]);
 
     useEffect(() => {
       const canvas = canvasRef.current;
@@ -69,28 +100,32 @@ export const VideoIcon = forwardRef<VideoIconHandle, { src: string; className?: 
         video.removeEventListener("loadeddata", processFrame);
         if (rafRef.current) cancelAnimationFrame(rafRef.current);
       };
-    }, []);
+    }, [loop, processFrame]);
 
-    useImperativeHandle(ref, () => ({
-      play: () => {
-        const video = videoRef.current;
-        if (!video) return;
-        video.currentTime = 0;
-        void video.play();
-        if (rafRef.current) cancelAnimationFrame(rafRef.current);
-        rafRef.current = requestAnimationFrame(loop);
-      },
-      pause: () => {
-        videoRef.current?.pause();
-        if (rafRef.current) {
-          cancelAnimationFrame(rafRef.current);
-          rafRef.current = undefined;
-        }
-      },
-    }));
+    useImperativeHandle(
+      ref,
+      () => ({
+        play: () => {
+          const video = videoRef.current;
+          if (!video) return;
+          video.currentTime = 0;
+          void video.play();
+          if (rafRef.current) cancelAnimationFrame(rafRef.current);
+          rafRef.current = requestAnimationFrame(loop);
+        },
+        pause: () => {
+          videoRef.current?.pause();
+          if (rafRef.current) {
+            cancelAnimationFrame(rafRef.current);
+            rafRef.current = undefined;
+          }
+        },
+      }),
+      [loop],
+    );
 
     return (
-      <span className={cn("relative inline-block h-7 w-7 shrink-0", className)}>
+      <span className={cn("relative inline-block h-8 w-8 shrink-0", className)}>
         <video
           ref={videoRef}
           src={src}

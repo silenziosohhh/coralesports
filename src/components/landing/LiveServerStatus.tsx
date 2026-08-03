@@ -13,10 +13,6 @@ type ServerStatus = {
   version: string | null;
 };
 
-/**
- * Interroga l'API pubblica gratuita mcstatus.io (nessuna auth, nessun DB):
- * mostra se il server di gioco è online e quanti giocatori sono connessi ora.
- */
 async function fetchStatus(signal: AbortSignal): Promise<ServerStatus | null> {
   const res = await fetch(
     `https://api.mcstatus.io/v2/status/java/${SERVER_IP}`,
@@ -34,10 +30,9 @@ async function fetchStatus(signal: AbortSignal): Promise<ServerStatus | null> {
   };
 }
 
-/** Contatore che si anima da 0 al valore reale una volta caricato lo status. */
 function useCountUp(target: number, active: boolean, durationMs = 1200) {
   const [value, setValue] = useState(0);
-  const frame = useRef<number>();
+  const frame = useRef<number | undefined>(undefined);
 
   useEffect(() => {
     if (!active) return;
@@ -92,7 +87,6 @@ export function LiveServerStatus({ className }: { className?: string }) {
     };
 
     load();
-    // Aggiornamento live ogni 60s.
     const interval = setInterval(load, 60_000);
 
     return () => {
@@ -113,7 +107,6 @@ export function LiveServerStatus({ className }: { className?: string }) {
     }
   };
 
-  // Se l'API non risponde proprio, non mostriamo una card rotta.
   if (failed && !status) return null;
 
   return (

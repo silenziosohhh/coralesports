@@ -46,8 +46,8 @@ export default async function AdminTeamsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg-primary)] py-12">
-      <div className="container mx-auto px-4">
+    <main className="admin-page-shell min-h-screen px-4 pb-32 pt-28 sm:pt-32">
+      <div className="admin-page-content mx-auto w-full max-w-7xl">
         <div className="mb-8 flex items-center justify-between">
           <div>
             <h1 className="page-title mb-2 text-4xl font-bold">Gestione Teams</h1>
@@ -58,7 +58,6 @@ export default async function AdminTeamsPage() {
           </Button>
         </div>
 
-        {/* Stats */}
         <div className="mb-8 grid gap-4 md:grid-cols-3">
           <Card className="glass-card border-cyan/20">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -91,7 +90,6 @@ export default async function AdminTeamsPage() {
           </Card>
         </div>
 
-        {/* Teams List */}
         <Card className="glass-card border-cyan/20">
           <CardHeader>
             <CardTitle>Tutti i Teams</CardTitle>
@@ -100,7 +98,7 @@ export default async function AdminTeamsPage() {
           <CardContent>
             {teams.length === 0 ? (
               <div className="py-12 text-center">
-                <Users className="mx-auto h-12 w-12 text-gray/50" />
+                <Users className="text-gray/50 mx-auto h-12 w-12" />
                 <p className="mt-4 text-gray">Nessun team registrato</p>
               </div>
             ) : (
@@ -109,6 +107,6 @@ export default async function AdminTeamsPage() {
           </CardContent>
         </Card>
       </div>
-    </div>
+    </main>
   );
 }

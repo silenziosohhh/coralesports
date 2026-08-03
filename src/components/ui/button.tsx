@@ -4,27 +4,30 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "relative inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-[background-color,color,box-shadow,transform] duration-200 ease-out hover:shadow-[0_10px_30px_rgba(0,0,0,0.18)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 disabled:hover:shadow-none",
+  "relative inline-flex items-center justify-center whitespace-nowrap rounded-xl border-[3px] border-transparent text-sm font-bold shadow-[0_4px_8px_rgba(0,0,0,0.25)] transition-[background-color,border-color,color,box-shadow,transform] duration-200 ease-out hover:-translate-y-0.5 hover:shadow-[0_9px_20px_rgba(0,0,0,0.32)] active:translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:shadow-[0_4px_8px_rgba(0,0,0,0.25)]",
   {
     variants: {
       variant: {
-        default: "bg-[var(--color-primary)] text-[var(--bg-primary)] font-semibold",
-        destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+        default:
+          "border-[var(--color-highlight)] bg-[var(--color-primary)] text-[var(--bg-primary)] hover:border-[#00356f] hover:bg-[var(--color-primary)]",
+        destructive: "border-red-950/60 bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline:
-          "border border-white/15 bg-white/5 text-white hover:bg-white/10 focus-visible:ring-[var(--color-accent)]/40 focus-visible:ring-offset-0",
-        secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        ghost: "text-white/80 hover:bg-white/5 hover:text-white focus-visible:ring-[var(--color-accent)]/30 focus-visible:ring-offset-0",
+          "border-white/20 bg-[var(--bg-secondary)]/70 text-white backdrop-blur-md hover:border-[var(--color-primary)] hover:bg-[var(--bg-secondary)] focus-visible:ring-[var(--color-accent)]/40 focus-visible:ring-offset-0",
+        secondary:
+          "border-[var(--color-highlight)] bg-secondary text-secondary-foreground hover:border-[var(--color-primary)] hover:bg-secondary/80",
+        ghost:
+          "border-transparent bg-transparent text-white/80 shadow-none hover:border-white/10 hover:bg-white/5 hover:text-white focus-visible:ring-[var(--color-accent)]/30 focus-visible:ring-offset-0",
         link: "text-[var(--color-accent)] underline-offset-4 hover:underline",
-        cyan: "bg-[var(--color-primary)] text-[var(--bg-primary)] font-semibold",
+        cyan:
+          "border-[var(--color-highlight)] bg-[var(--color-primary)] text-[var(--bg-primary)] hover:border-[#00356f] hover:bg-[var(--color-primary)]",
         highlight:
-          "bg-[var(--color-highlight)] text-black hover:brightness-110 focus-visible:ring-[var(--color-highlight)]/50 focus-visible:ring-offset-0 font-extrabold",
-        purple: "bg-purple-100 text-white hover:bg-purple-200",
+          "border-[var(--color-primary)] bg-[var(--color-highlight)] text-white hover:border-[var(--color-secondary)] hover:brightness-110 focus-visible:ring-[var(--color-highlight)]/50 focus-visible:ring-offset-0",
+        purple: "border-purple-950/40 bg-purple-100 text-white hover:bg-purple-200",
         discord:
-          "bg-[#5865F2] text-white hover:bg-[#4752C4] focus-visible:ring-[#5865F2] focus-visible:ring-offset-0",
+          "border-[#e0b400] bg-[#ffd63d] text-[#141414] hover:border-[#c39c00] hover:bg-[#ffe066] focus-visible:ring-[#ffd63d] focus-visible:ring-offset-0 [&_svg]:text-[#141414]",
       },
       glare: {
-        true:
-          "overflow-hidden before:pointer-events-none before:absolute before:inset-0 before:rounded-[inherit] before:opacity-0 before:transition-[background-position,opacity] before:duration-[var(--gh-duration)] before:ease-out before:bg-[linear-gradient(var(--gh-angle),transparent,rgb(var(--gh-color)/var(--gh-opacity)),transparent)] before:bg-[length:var(--gh-size)_var(--gh-size)] before:bg-[position:0%_0%] hover:before:opacity-100 hover:before:bg-[position:100%_100%]",
+        true: "clean-button-shine overflow-hidden",
         false: "",
       },
       hoverTone: {
@@ -43,12 +46,12 @@ const buttonVariants = cva(
       {
         variant: "ghost",
         glare: true,
-        className: "before:opacity-0 hover:before:opacity-0 hover:shadow-none",
+        className: "clean-button-shine-off hover:shadow-none",
       },
       {
         variant: "link",
         glare: true,
-        className: "before:opacity-0 hover:before:opacity-0 hover:shadow-none",
+        className: "clean-button-shine-off hover:shadow-none",
       },
       {
         variant: "ghost",

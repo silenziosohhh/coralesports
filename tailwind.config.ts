@@ -1,5 +1,9 @@
 import type { Config } from "tailwindcss";
 
+const fullOpacityScale = Object.fromEntries(
+  Array.from({ length: 101 }, (_, step) => [String(step), String(step / 100)]),
+);
+
 const config: Config = {
   darkMode: ["class"],
   content: [
@@ -16,6 +20,7 @@ const config: Config = {
       },
     },
     extend: {
+      opacity: fullOpacityScale,
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -50,7 +55,6 @@ const config: Config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        // New color palette
         "bg-primary": "var(--bg-primary)",
         "bg-secondary": "var(--bg-secondary)",
         "bg-card": "var(--bg-card)",
@@ -112,9 +116,8 @@ const config: Config = {
           200: "var(--dark-200)",
           300: "var(--dark-300)",
         },
-        // Legacy colors for compatibility
         white: {
-          DEFAULT: "var(--white-100)",
+          DEFAULT: "rgb(255 255 255 / <alpha-value>)",
           100: "var(--white-100)",
           200: "var(--white-200)",
           300: "var(--white-300)",
@@ -124,7 +127,7 @@ const config: Config = {
           700: "var(--white-700)",
         },
         black: {
-          DEFAULT: "var(--black-100)",
+          DEFAULT: "rgb(0 0 0 / <alpha-value>)",
           100: "var(--black-100)",
           200: "var(--black-200)",
           300: "var(--black-300)",

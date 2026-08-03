@@ -9,10 +9,8 @@ function playersPerTeamFromMode(mode: "SOLO" | "DUO" | "TRIO") {
   return 1;
 }
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { token: string } }
-) {
+export async function GET(req: NextRequest, props: { params: Promise<{ token: string }> }) {
+  const params = await props.params;
   try {
     const token = params.token;
     const invitation = await prisma.tournamentTeamInvite.findUnique({
@@ -49,10 +47,8 @@ export async function GET(
   }
 }
 
-export async function POST(
-  req: NextRequest,
-  { params }: { params: { token: string } }
-) {
+export async function POST(req: NextRequest, props: { params: Promise<{ token: string }> }) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {

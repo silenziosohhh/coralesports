@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
@@ -117,9 +118,7 @@ export function TournamentSignupDialog({
   const acceptedPlayersCount = myEntry?.players.length ?? 0;
   const missingPlayers = Math.max(0, requiredPlayers - acceptedPlayersCount);
   const canManage =
-    !!session?.user?.id &&
-    (!!myEntry ? myEntry.status === "PENDING" : true) &&
-    missingPlayers >= 0;
+    !!session?.user?.id && (!!myEntry ? myEntry.status === "PENDING" : true) && missingPlayers >= 0;
 
   useEffect(() => {
     if (!open) return;
@@ -132,10 +131,12 @@ export function TournamentSignupDialog({
         ]);
 
         const entryData = (await entryRes.json()) as MyEntryResponse;
-        if (!entryRes.ok) throw new Error((entryData as any)?.error || "Errore nel recupero iscrizione");
+        if (!entryRes.ok)
+          throw new Error((entryData as any)?.error || "Errore nel recupero iscrizione");
 
         const eligibleData = (await eligibleRes.json()) as EligibleUser[];
-        if (!eligibleRes.ok) throw new Error((eligibleData as any)?.error || "Errore nel recupero utenti");
+        if (!eligibleRes.ok)
+          throw new Error((eligibleData as any)?.error || "Errore nel recupero utenti");
 
         setMyEntry(entryData.entry);
         setEligibleUsers(eligibleData);
@@ -149,9 +150,7 @@ export function TournamentSignupDialog({
 
   useEffect(() => {
     if (!open) return;
-    setSelectedIds((prev) =>
-      Array.from({ length: missingPlayers }, (_, i) => prev[i] ?? "")
-    );
+    setSelectedIds((prev) => Array.from({ length: missingPlayers }, (_, i) => prev[i] ?? ""));
   }, [missingPlayers, open]);
 
   const inviteUrlForToken = useCallback(
@@ -224,7 +223,9 @@ export function TournamentSignupDialog({
 
       toast.success("Inviti inviati!");
 
-      const entryRes = await fetch(`/api/tournaments/${tournamentId}/my-entry`, { cache: "no-store" });
+      const entryRes = await fetch(`/api/tournaments/${tournamentId}/my-entry`, {
+        cache: "no-store",
+      });
       const entryData = (await entryRes.json()) as MyEntryResponse;
       if (entryRes.ok) {
         setMyEntry(entryData.entry);
@@ -247,7 +248,11 @@ export function TournamentSignupDialog({
 
   const pendingInvites = (myEntry?.invites ?? []).filter((i) => i.status === "PENDING");
   const pendingTokensKey = useMemo(
-    () => pendingInvites.map((i) => i.token).sort().join(","),
+    () =>
+      pendingInvites
+        .map((i) => i.token)
+        .sort()
+        .join(","),
     [pendingInvites]
   );
 
@@ -262,7 +267,7 @@ export function TournamentSignupDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="sm:max-w-[720px] glass-card border-cyan-border">
+      <DialogContent className="max-h-[92vh] overflow-y-auto sm:max-w-[720px]">
         <DialogHeader>
           <DialogTitle className="gradient-text text-2xl">Iscriviti</DialogTitle>
           <DialogDescription className="text-[var(--text-secondary)]">
@@ -276,12 +281,13 @@ export function TournamentSignupDialog({
           <div className="space-y-5">
             {!session?.user?.minecraftUsername && (
               <div className="rounded-lg border border-yellow-500/20 bg-yellow-500/10 p-3 text-sm text-yellow-200">
-                Collega prima il nick Minecraft in <span className="font-semibold">Settings</span> per poter iscriverti o essere invitato.
+                Collega prima il nick Minecraft in <span className="font-semibold">Settings</span>{" "}
+                per poter iscriverti o essere invitato.
               </div>
             )}
 
             {myEntry?.status === "REGISTERED" && (
-              <div className="rounded-lg border border-cyan/20 bg-cyan/10 p-3 text-sm text-cyan-100">
+              <div className="border-cyan/20 bg-cyan/10 rounded-lg border p-3 text-sm text-cyan-100">
                 Iscrizione completa. Sei già registrato per questo torneo.
               </div>
             )}
@@ -307,7 +313,9 @@ export function TournamentSignupDialog({
                   <div className="rounded-lg border border-white/10 bg-black/20 p-4">
                     <div className="mb-2 text-sm font-semibold text-white">Metodo invito</div>
                     <div className="text-xs text-[var(--text-secondary)]">
-                      L’invito arriva sempre come <span className="font-semibold text-white">notifica sul sito</span>. In più puoi copiare un link o mostrare un QR.
+                      L’invito arriva sempre come{" "}
+                      <span className="font-semibold text-white">notifica sul sito</span>. In più
+                      puoi copiare un link o mostrare un QR.
                     </div>
                     <div className="mt-3 flex flex-wrap gap-2">
                       <Button
@@ -340,9 +348,7 @@ export function TournamentSignupDialog({
                   {Array.from({ length: missingPlayers }).map((_, idx) => (
                     <div key={idx}>
                       <label className="mb-2 block text-sm font-medium text-[var(--text-primary)]">
-                        {missingPlayers === 1
-                          ? "Scegli 1 compagno"
-                          : `Scegli compagno ${idx + 1}`}
+                        {missingPlayers === 1 ? "Scegli 1 compagno" : `Scegli compagno ${idx + 1}`}
                       </label>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -362,7 +368,7 @@ export function TournamentSignupDialog({
                             </span>
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent className="w-[min(520px,calc(100vw-2rem))] max-h-[360px] overflow-y-auto">
+                        <DropdownMenuContent className="max-h-[360px] w-[min(520px,calc(100vw-2rem))] overflow-y-auto">
                           <DropdownMenuLabel>Seleziona utente</DropdownMenuLabel>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem
@@ -403,9 +409,7 @@ export function TournamentSignupDialog({
                     className="w-full"
                     variant="cyan"
                     disabled={
-                      submitting ||
-                      myEntry?.status === "REGISTERED" ||
-                      missingPlayers === 0
+                      submitting || myEntry?.status === "REGISTERED" || missingPlayers === 0
                     }
                   >
                     {submitting ? "Invio inviti..." : "Invia Inviti"}
@@ -421,10 +425,15 @@ export function TournamentSignupDialog({
                   {pendingInvites.map((inv) => {
                     const url = inviteUrlForToken(inv.token);
                     return (
-                      <div key={inv.token} className="rounded-md border border-white/10 bg-black/10 p-3">
+                      <div
+                        key={inv.token}
+                        className="rounded-md border border-white/10 bg-black/10 p-3"
+                      >
                         <div className="flex flex-wrap items-center justify-between gap-2">
                           <div className="text-sm text-white">
-                            {inv.invitedUser.minecraftUsername || inv.invitedUser.discordTag || inv.invitedUser.id}
+                            {inv.invitedUser.minecraftUsername ||
+                              inv.invitedUser.discordTag ||
+                              inv.invitedUser.id}
                           </div>
                           <div className="flex gap-2">
                             <Button
@@ -452,16 +461,19 @@ export function TournamentSignupDialog({
                         </div>
 
                         {inviteDelivery === "LINK" && (
-                          <div className="mt-3 rounded-md border border-white/10 bg-black/15 p-2 text-xs text-[var(--text-secondary)] overflow-wrap-anywhere">
+                          <div className="overflow-wrap-anywhere mt-3 rounded-md border border-white/10 bg-black/15 p-2 text-xs text-[var(--text-secondary)]">
                             {url}
                           </div>
                         )}
 
                         {inviteDelivery === "QR" && qrByToken[inv.token] && (
                           <div className="mt-3 flex items-center justify-center">
-                            <img
+                            <Image
                               src={qrByToken[inv.token]}
                               alt="QR Code invito"
+                              width={240}
+                              height={240}
+                              unoptimized
                               className="h-[240px] w-[240px] rounded bg-white p-2"
                             />
                           </div>

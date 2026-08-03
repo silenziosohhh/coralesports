@@ -2,11 +2,6 @@
 
 import { cn } from "@/lib/utils";
 
-/**
- * Separatore decorativo a onda (tema Coral/mare) tra una sezione e l'altra.
- * Linea ondulata con gradient stroke che sfuma ai bordi: leggibile anche su
- * sfondo uniforme, dove un'onda "piena" non si distinguerebbe.
- */
 export function SectionWave({ className }: { className?: string }) {
   return (
     <div aria-hidden className={cn("relative flex justify-center py-6 sm:py-8", className)}>

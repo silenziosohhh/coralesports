@@ -2,8 +2,12 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
+import { Home, RotateCw, ShieldAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Home, RotateCw } from "lucide-react";
+import { DiscordWave } from "@/components/landing/DiscordWave";
+import { ParallaxDots } from "@/components/landing/ParallaxDots";
+import { ParallaxSection } from "@/components/landing/ParallaxSection";
+import { SoftParallaxBlobs } from "@/components/landing/LandingParallaxBackgrounds";
 import { useI18n } from "@/lib/i18n";
 
 export default function Error({
@@ -20,121 +24,73 @@ export default function Error({
   }, [error]);
 
   return (
-    <main className="relative flex min-h-[100svh] flex-col items-center justify-center overflow-hidden bg-[radial-gradient(circle_at_50%_-10%,rgba(255,80,80,0.16),transparent_55%),linear-gradient(180deg,var(--bg-primary)_0%,#0a0406_70%,#000_100%)] px-4 py-24 text-center">
-      {/* Broken block */}
-      <div aria-hidden className="relative mb-8 h-24 w-24">
-        <div className="broken">
-          <div className="mc-block">
-            <span className="crack c1" />
-            <span className="crack c2" />
-            <span className="crack c3" />
+    <main className="error-experience w-full max-w-full overflow-x-hidden bg-[var(--bg-primary)]">
+      <ParallaxSection
+        overflow="hidden"
+        className="discord-join-shell relative isolate min-h-[calc(100svh-5rem)] px-4 pb-40 pt-36 sm:pb-44 sm:pt-40"
+        renderBackground={(progress) => (
+          <div className="absolute inset-0">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_16%,rgba(87,255,255,0.2),transparent_30%),linear-gradient(115deg,#3b82f6_0%,#397ef0_52%,#2563eb_100%)]" />
+            <SoftParallaxBlobs progress={progress} className="opacity-55" />
+            <ParallaxDots progress={progress} className="opacity-65" dotAlpha={0.48} dotSizePx={2} gridSizePx={21} />
+          </div>
+        )}
+      >
+        <DiscordWave position="top" />
+        <DiscordWave position="bottom" />
+
+        <div className="relative z-10 mx-auto w-full max-w-6xl">
+          <header className="mx-auto max-w-6xl text-center">
+            <div className="mx-auto mb-5 flex w-fit items-center gap-2 text-sm font-black uppercase tracking-[0.22em] text-[#ffd63d]">
+              <ShieldAlert className="h-5 w-5" />
+              500
+            </div>
+            <h1 className="mx-auto max-w-6xl text-balance text-[clamp(3rem,7vw,5.7rem)] font-black uppercase leading-[0.9] tracking-[-0.05em] text-white [text-shadow:4px_5px_0_rgba(0,0,0,0.24)]">
+              {t("error.hero")}
+            </h1>
+            <p className="mx-auto mt-6 max-w-[62ch] text-pretty text-base leading-relaxed text-white/78 sm:text-xl">
+              {t("error.description")}
+            </p>
+          </header>
+
+          <div className="mx-auto mt-12 max-w-3xl">
+            <section className="relative flex flex-col overflow-hidden rounded-[28px] border-2 border-white/20 bg-[#061b3b]/72 p-7 text-center shadow-[0_26px_70px_rgba(0,20,65,0.34)] backdrop-blur-2xl sm:p-10">
+              <div aria-hidden className="absolute -right-24 -top-24 h-64 w-64 rounded-full bg-[#ffd63d]/18 blur-3xl" />
+              <div className="relative">
+                <p className="text-7xl font-black leading-none tracking-[-0.07em] text-white/14 sm:text-8xl">500</p>
+                <h2 className="mt-4 text-3xl font-black tracking-[-0.04em] text-white">{t("error.title")}</h2>
+                <p className="mt-4 text-base leading-relaxed text-white/68">{t("error.support")}</p>
+                {error.digest ? (
+                  <p className="mt-5 font-mono text-xs text-white/42">ID: {error.digest}</p>
+                ) : null}
+              </div>
+
+              <div className="relative mx-auto mt-8 grid w-full max-w-xl gap-3 sm:grid-cols-2">
+                <Button
+                  size="lg"
+                  onClick={reset}
+                  className="min-h-[4rem] w-full gap-3 rounded-[14px] border-[5px] border-[#007fda] bg-[#0bb5ff] text-base font-black text-[#00152b] shadow-[0_10px_0_rgba(0,66,132,0.45)] hover:bg-[#22c0ff]"
+                >
+                  <RotateCw className="h-5 w-5" />
+                  {t("error.retry")}
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  asChild
+                  className="min-h-[3.5rem] w-full gap-3 rounded-[14px] border-2 border-white/25 bg-white/[0.06] text-base font-black text-white hover:bg-white/12 hover:text-white"
+                >
+                  <Link href="/">
+                    <Home className="h-5 w-5" />
+                    {t("error.home")}
+                  </Link>
+                </Button>
+              </div>
+            </section>
+
           </div>
         </div>
-        <div className="absolute -bottom-6 left-1/2 h-6 w-24 -translate-x-1/2 rounded-[100%] bg-red-500/20 blur-xl" />
-      </div>
-
-      <span className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-red-300">
-        {t("error.badge")}
-      </span>
-
-      <h1 className="glitch mb-4 text-7xl font-black uppercase leading-none tracking-tight text-white sm:text-8xl md:text-9xl">
-        500
-      </h1>
-
-      <h2 className="mb-3 text-2xl font-bold text-white sm:text-3xl">
-        {t("error.title")}
-      </h2>
-
-      <p className="mb-6 max-w-md text-pretty text-base leading-relaxed text-gray-300">
-        {t("error.description")}
-      </p>
-
-      {error?.message ? (
-        <p className="mb-8 max-w-md break-all rounded-lg border border-white/10 bg-black/40 px-4 py-3 font-mono text-xs text-gray-400">
-          {error.message}
-        </p>
-      ) : null}
-
-      <div className="flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center">
-        <Button size="lg" onClick={reset} className="h-12 gap-2 px-6 font-bold">
-          <RotateCw className="h-5 w-5" />
-          {t("error.retry")}
-        </Button>
-        <Button size="lg" variant="outline" asChild className="h-12 gap-2 px-6">
-          <Link href="/">
-            <Home className="h-5 w-5" />
-            {t("error.home")}
-          </Link>
-        </Button>
-      </div>
-
-      <style jsx>{`
-        .broken {
-          animation: shake 2.6s ease-in-out infinite;
-        }
-        .mc-block {
-          position: relative;
-          width: 84px;
-          height: 84px;
-          margin: 0 auto;
-          border-radius: 8px;
-          background: linear-gradient(160deg, #7a4b46 0%, #5a3330 100%);
-          box-shadow:
-            inset 0 0 0 3px rgba(0, 0, 0, 0.22),
-            0 14px 30px rgba(0, 0, 0, 0.45),
-            0 0 34px rgba(255, 70, 70, 0.25);
-        }
-        .crack {
-          position: absolute;
-          background: rgba(0, 0, 0, 0.55);
-        }
-        .crack.c1 {
-          top: 8px;
-          left: 40px;
-          width: 3px;
-          height: 34px;
-          transform: rotate(18deg);
-        }
-        .crack.c2 {
-          top: 38px;
-          left: 18px;
-          width: 32px;
-          height: 3px;
-          transform: rotate(-12deg);
-        }
-        .crack.c3 {
-          bottom: 10px;
-          right: 20px;
-          width: 3px;
-          height: 26px;
-          transform: rotate(24deg);
-        }
-        .glitch {
-          text-shadow:
-            0.04em 0 0 rgba(255, 70, 70, 0.55),
-            -0.04em -0.02em 0 rgba(255, 160, 60, 0.5),
-            0 0 24px rgba(255, 70, 70, 0.2);
-          animation: glitch 3.5s steps(2, end) infinite;
-        }
-        @keyframes shake {
-          0%, 100% { transform: translate(0, 0) rotate(0deg); }
-          25% { transform: translate(-3px, 1px) rotate(-3deg); }
-          50% { transform: translate(3px, -1px) rotate(3deg); }
-          75% { transform: translate(-2px, 0) rotate(-1.5deg); }
-        }
-        @keyframes glitch {
-          0%, 92%, 100% { transform: translate(0, 0); }
-          93% { transform: translate(-2px, 1px); }
-          95% { transform: translate(2px, -1px); }
-          97% { transform: translate(-1px, 0); }
-        }
-        @media (prefers-reduced-motion: reduce) {
-          .broken,
-          .glitch {
-            animation: none !important;
-          }
-        }
-      `}</style>
+      </ParallaxSection>
     </main>
   );
 }

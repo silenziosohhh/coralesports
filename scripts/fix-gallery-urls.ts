@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('Fixing galleryUrls data...');
   
-  // Update all products with invalid galleryUrls
+
   const result = await prisma.$executeRaw`
     UPDATE "ShopProduct" 
     SET "galleryUrls" = NULL 

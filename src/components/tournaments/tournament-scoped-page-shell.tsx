@@ -1,5 +1,4 @@
 import type { ReactNode } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyStateCard } from "@/components/ui/empty-state-card";
 
 export function TournamentScopedPageShell({
@@ -26,48 +25,44 @@ export function TournamentScopedPageShell({
   children: ReactNode;
 }) {
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="page-title mb-2 text-4xl font-bold">
-          <span className="text-[var(--text-primary)]">{title}</span>
-        </h1>
-        <p className="text-muted-foreground">{description}</p>
-      </div>
+    <main className="admin-page-shell min-h-screen px-4 pb-28 pt-28 sm:pt-32">
+      <div className="admin-page-content mx-auto w-full max-w-7xl">
+        <header className="mb-10 max-w-3xl">
+          <h1 className="page-title mb-3 text-4xl sm:text-5xl">{title}</h1>
+          <p className="text-base leading-7 text-white/60">{description}</p>
+        </header>
 
-      {!hasTournaments ? (
-        <EmptyStateCard
-          title={noTournamentsTitle}
-          description={noTournamentsDescription}
-          action={noTournamentsAction}
-        />
-      ) : (
-        <>
-          <Card className="glass-card border-cyan/20 mb-6">
-            <CardHeader>
-              <CardTitle>Filtro torneo</CardTitle>
-              <CardDescription>Scegli quale torneo visualizzare.</CardDescription>
-            </CardHeader>
-            <CardContent>
+        {!hasTournaments ? (
+          <EmptyStateCard
+            title={noTournamentsTitle}
+            description={noTournamentsDescription}
+            action={noTournamentsAction}
+          />
+        ) : (
+          <>
+            <section className="glass-card mb-6 p-6 sm:p-7">
+              <div className="mb-5">
+                <h2 className="text-xl font-bold text-white">Filtro torneo</h2>
+                <p className="mt-1 text-sm text-white/55">Scegli quale torneo visualizzare.</p>
+              </div>
               <div className="max-w-[680px]">
-                <label className="block text-sm font-medium mb-2 text-[var(--text-primary)]">Torneo</label>
+                <label className="mb-2 block text-sm font-bold text-white">Torneo</label>
                 {filter}
               </div>
-            </CardContent>
-          </Card>
+            </section>
 
-          {!hasSelection ? (
-            <Card className="glass-card border-white/10">
-              <CardContent className="flex min-h-[280px] flex-col items-center justify-center text-center">
+            {!hasSelection ? (
+              <section className="glass-card flex min-h-[280px] flex-col items-center justify-center p-6 text-center">
                 {emptyIcon}
                 <h3 className="mb-2 text-xl font-semibold">Nessun torneo selezionato</h3>
-                <p className="text-muted-foreground">Seleziona un torneo dal menu a tendina.</p>
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="space-y-6">{children}</div>
-          )}
-        </>
-      )}
-    </div>
+                <p className="text-white/55">Seleziona un torneo dal menu a tendina.</p>
+              </section>
+            ) : (
+              <div className="space-y-6">{children}</div>
+            )}
+          </>
+        )}
+      </div>
+    </main>
   );
 }

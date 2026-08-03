@@ -7,10 +7,6 @@ import { cn } from "@/lib/utils";
 import { INTL_LOCALE, useI18n } from "@/lib/i18n";
 import type { Champion } from "@/app/api/champion/route";
 
-/**
- * Skin del giocatore in posa "cheer". La GIF va servita non ottimizzata:
- * l'optimizer di next/image ricodifica l'immagine e perde l'animazione.
- */
 function skinUrl(username: string) {
   const params = new URLSearchParams({
     size: "1024",
@@ -44,7 +40,6 @@ export function TournamentChampion({ className }: { className?: string }) {
     };
   }, []);
 
-  // Senza nome Minecraft non c'è skin da mostrare: meglio non occupare il posto.
   if (!champion || !champion.username || skinFailed) return null;
 
   return (
@@ -52,7 +47,7 @@ export function TournamentChampion({ className }: { className?: string }) {
       <div className="relative aspect-square w-[300px] sm:w-[400px] lg:w-[400px] xl:w-[480px]">
         <Image
           src={skinUrl(champion.username)}
-          alt={`Skin di ${champion.displayName}, primo classificato`}
+          alt={t("champion.skinAlt", { name: champion.displayName })}
           fill
           unoptimized
           sizes="480px"
@@ -63,7 +58,7 @@ export function TournamentChampion({ className }: { className?: string }) {
 
       <Link
         href="/leaderboard"
-        aria-label={`${champion.displayName}, primo classificato — vai alla classifica`}
+        aria-label={t("champion.linkAria", { name: champion.displayName })}
         className="group mt-4 rounded-2xl px-6 py-4 text-center backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5"
         style={{
           border: "1px solid rgba(255,255,255,0.1)",

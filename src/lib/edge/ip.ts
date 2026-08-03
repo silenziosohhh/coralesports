@@ -1,9 +1,6 @@
 import type { NextRequest } from "next/server";
 
 export function getClientIp(req: NextRequest) {
-  const direct = req.ip;
-  if (direct) return direct;
-
   const xff = req.headers.get("x-forwarded-for");
   if (xff) return xff.split(",")[0]?.trim() || "unknown";
 
@@ -12,4 +9,3 @@ export function getClientIp(req: NextRequest) {
 
   return "unknown";
 }
-

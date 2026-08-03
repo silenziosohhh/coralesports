@@ -2,14 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { DEMO_CONTENT_ENABLED, getDemoTeams, toDemoTeamApi } from "@/lib/demo-content";
 
-export async function GET(req: NextRequest) {
+export async function GET(_req: NextRequest) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user) {
+    return NextResponse.json({ error: "Non autorizzato" }, { status: 401 });
+  }
+
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user) {
-      return NextResponse.json({ error: "Non autorizzato" }, { status: 401 });
-    }
-
     const teams = await prisma.team.findMany({
       include: {
         members: {
@@ -43,8 +44,27 @@ export async function GET(req: NextRequest) {
       },
     });
 
-    return NextResponse.json(teams);
+    return NextResponse.json(teams, { headers: { "X-Coral-Data-Source": "api" } });
   } catch (error) {
+    if (DEMO_CONTENT_ENABLED) {
+      console.warn("Team API unavailable; using demo teams.", error);
+      const teams = getDemoTeams().map((team) => {
+        const demo = toDemoTeamApi(team);
+        const creator = team.members.find((member) => member.user.id === team.createdById)?.user;
+        return {
+          ...demo,
+          createdBy: creator
+            ? { id: creator.id, name: creator.name, image: creator.image }
+            : null,
+          _count: {
+            members: team.members.length,
+            tournamentTeams: demo._count.tournamentTeams,
+          },
+        };
+      });
+      return NextResponse.json(teams, { headers: { "X-Coral-Data-Source": "demo" } });
+    }
+
     console.error("Error fetching teams:", error);
     return NextResponse.json(
       { error: "Errore nel recupero dei team" },
@@ -63,7 +83,6 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { name, tag, logo, description, visibility } = body;
 
-    // Validazione
     if (!name || !tag) {
       return NextResponse.json(
         { error: "Nome e tag sono obbligatori" },
@@ -71,7 +90,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Verifica se il nome o tag esistono già
     const existingTeam = await prisma.team.findFirst({
       where: {
         OR: [{ name }, { tag }],
@@ -85,7 +103,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Crea il team
     const team = await prisma.team.create({
       data: {
         name,
@@ -124,7 +141,6 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // Aggiorna il ruolo dell'utente a TEAM_CAPTAIN se non lo è già
     await prisma.user.update({
       where: { id: session.user.id },
       data: {
@@ -132,7 +148,6 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // Crea audit log
     await prisma.auditLog.create({
       data: {
         userId: session.user.id,

@@ -3,20 +3,10 @@
 import Image from "next/image";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { useI18n } from "@/lib/i18n";
 
 const AVYRA_BODY = "https://avyra-skin-api.vercel.app/api/body";
 
-/**
- * Render full-body della skin tramite Avyra Skin API (server-side).
- *
- * Posa `wave`: saluto amichevole, un braccio alzato, viso ben visibile e
- * silhouette dinamica — la scelta migliore per una card creator ("ci mettono
- * la faccia"). `quality=ultra` renderizza a 4x e fa downsample, così i bordi
- * pixel-art restano nitidi. Sfondo trasparente per comporre sulla sezione.
- *
- * Rispetto al vecchio render skinview3d evitiamo un contesto WebGL/three.js
- * per ogni card: qui è una semplice <img> cachata dall'API.
- */
 function bodyUrl(username: string) {
   const params = new URLSearchParams({
     pose: "wave",
@@ -34,6 +24,7 @@ type CreatorSkinProps = {
 };
 
 export function CreatorSkin({ username, name, className }: CreatorSkinProps) {
+  const { t } = useI18n();
   const [failed, setFailed] = useState(false);
 
   return (
@@ -45,7 +36,7 @@ export function CreatorSkin({ username, name, className }: CreatorSkinProps) {
       ) : (
         <Image
           src={bodyUrl(username)}
-          alt={`Skin di ${name}`}
+          alt={t("creators.skinAlt", { name })}
           fill
           unoptimized
           sizes="(max-width: 640px) 80vw, 300px"

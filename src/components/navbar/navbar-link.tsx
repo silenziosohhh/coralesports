@@ -31,7 +31,7 @@ export function NavbarLink({
       : "inline-flex items-center rounded-md px-3 py-2 text-sm font-semibold transition-colors";
 
   const state = isActive
-    ? "bg-[var(--color-accent)]/10 text-[var(--color-accent)]"
+    ? "text-white hover:brightness-110 [&_.navbar-link-label]:relative [&_.navbar-link-label]:bg-gradient-to-r [&_.navbar-link-label]:from-[#078bea] [&_.navbar-link-label]:via-[#13aef2] [&_.navbar-link-label]:to-[#39d7f2] [&_.navbar-link-label]:bg-clip-text [&_.navbar-link-label]:text-transparent [&_.navbar-link-label]:after:absolute [&_.navbar-link-label]:after:-bottom-1 [&_.navbar-link-label]:after:left-0 [&_.navbar-link-label]:after:right-0 [&_.navbar-link-label]:after:h-0.5 [&_.navbar-link-label]:after:rounded-full [&_.navbar-link-label]:after:bg-gradient-to-r [&_.navbar-link-label]:after:from-[#13aef2] [&_.navbar-link-label]:after:via-[#078bea] [&_.navbar-link-label]:after:to-[rgba(0,5,12,0)] [&_.navbar-link-label]:after:shadow-[0_0_9px_rgba(19,174,242,0.5)]"
     : "text-white/70 hover:bg-white/5 hover:text-white";
 
   const focus =

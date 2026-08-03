@@ -16,10 +16,6 @@ type SearchResults = {
 
 const emptyResults: SearchResults = { tournaments: [], teams: [], users: [] };
 
-/**
- * Apple-style frosted glass surface. NB: white/black opacity utilities are
- * unreliable in this theme, so the glass uses explicit rgba values.
- */
 const glassSurface =
   "border border-[rgba(255,255,255,0.12)] bg-[rgba(10,20,38,0.62)] shadow-[0_24px_80px_rgba(0,0,0,0.5)] backdrop-blur-2xl backdrop-saturate-150";
 
@@ -57,17 +53,29 @@ export function GlobalSearch() {
     }
 
     setLoading(true);
+    const controller = new AbortController();
     const timeout = setTimeout(() => {
-      fetch(`/api/search?q=${encodeURIComponent(query.trim())}`)
-        .then((res) => res.json())
+      fetch(`/api/search?q=${encodeURIComponent(query.trim())}`, {
+        signal: controller.signal,
+      })
+        .then((res) => {
+          if (!res.ok) throw new Error(String(res.status));
+          return res.json();
+        })
         .then((data) => {
           if (!data.error) setResults(data);
         })
-        .catch((error) => console.error("Error searching:", error))
+        .catch((error) => {
+          if (error instanceof DOMException && error.name === "AbortError") return;
+          console.error("Error searching:", error);
+        })
         .finally(() => setLoading(false));
     }, 300);
 
-    return () => clearTimeout(timeout);
+    return () => {
+      clearTimeout(timeout);
+      controller.abort();
+    };
   }, [query]);
 
   const handleNavigate = (href: string) => {
@@ -77,7 +85,8 @@ export function GlobalSearch() {
   };
 
   const hasQuery = query.trim().length >= 2;
-  const hasResults = results.tournaments.length > 0 || results.teams.length > 0 || results.users.length > 0;
+  const hasResults =
+    results.tournaments.length > 0 || results.teams.length > 0 || results.users.length > 0;
 
   return (
     <>
@@ -85,7 +94,7 @@ export function GlobalSearch() {
         variant="ghost"
         size="icon"
         onClick={() => setOpen(true)}
-        className="relative rounded-full bg-white/0 transition-colors hover:bg-white/5 focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]/40"
+        className="focus-visible:ring-[var(--color-accent)]/40 relative rounded-full bg-white/0 transition-colors hover:bg-white/5 focus-visible:ring-2"
         aria-label={t("search.aria")}
       >
         <Search className="h-5 w-5" />
@@ -93,10 +102,8 @@ export function GlobalSearch() {
 
       <DialogPrimitive.Root open={open} onOpenChange={setOpen}>
         <DialogPrimitive.Portal>
-          {/* Dimmed, softly blurred backdrop — the page stays visible underneath */}
           <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-[rgba(2,6,16,0.72)] backdrop-blur-[3px] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
 
-          {/* Wide search bar pinned near the top, like the reference design */}
           <DialogPrimitive.Content className="fixed left-1/2 top-[88px] z-50 w-[calc(100%-2rem)] max-w-2xl -translate-x-1/2 outline-none duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:slide-out-to-top-2 data-[state=open]:slide-in-from-top-2">
             <DialogPrimitive.Title className="sr-only">{t("search.aria")}</DialogPrimitive.Title>
 
@@ -110,17 +117,19 @@ export function GlobalSearch() {
                 className="h-14 flex-1 border-0 bg-transparent text-base text-white outline-none placeholder:text-[rgba(255,255,255,0.4)]"
               />
               {loading && (
-                <Loader2 className="h-4 w-4 shrink-0 animate-spin text-[rgba(255,255,255,0.45)]" aria-hidden />
+                <Loader2
+                  className="h-4 w-4 shrink-0 animate-spin text-[rgba(255,255,255,0.45)]"
+                  aria-hidden
+                />
               )}
               <DialogPrimitive.Close
-                className="grid h-8 w-8 shrink-0 place-items-center rounded-full text-[rgba(255,255,255,0.55)] transition-colors hover:bg-[rgba(255,255,255,0.1)] hover:text-white focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]/40"
+                className="focus-visible:ring-[var(--color-accent)]/40 grid h-8 w-8 shrink-0 place-items-center rounded-full text-[rgba(255,255,255,0.55)] transition-colors hover:bg-[rgba(255,255,255,0.1)] hover:text-white focus-visible:ring-2"
                 aria-label="✕"
               >
                 <X className="h-4 w-4" />
               </DialogPrimitive.Close>
             </div>
 
-            {/* Results float in a second glass panel under the bar */}
             {(hasQuery || loading) && (
               <div className={`mt-3 max-h-[60vh] overflow-y-auto rounded-xl p-2 ${glassSurface}`}>
                 {hasQuery && !loading && !hasResults && (
@@ -140,7 +149,7 @@ export function GlobalSearch() {
                         onClick={() => handleNavigate(`/tournaments/${tournament.id}`)}
                         className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm text-white transition-colors hover:bg-[rgba(255,255,255,0.08)]"
                       >
-                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--color-accent)]/15">
+                        <div className="bg-[var(--color-accent)]/15 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg">
                           <Trophy className="h-4 w-4 text-[var(--color-accent)]" />
                         </div>
                         <span className="truncate">{tournament.name}</span>
@@ -160,15 +169,22 @@ export function GlobalSearch() {
                         onClick={() => handleNavigate(`/teams/${team.id}`)}
                         className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm text-white transition-colors hover:bg-[rgba(255,255,255,0.08)]"
                       >
-                        <div className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-[var(--color-secondary)]/15">
+                        <div className="bg-[var(--color-secondary)]/15 flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-lg">
                           {team.logo ? (
-                            <Image src={team.logo} alt={team.name} width={32} height={32} className="h-full w-full object-cover" />
+                            <Image
+                              src={team.logo}
+                              alt={team.name}
+                              width={32}
+                              height={32}
+                              className="h-full w-full object-cover"
+                            />
                           ) : (
                             <Users className="h-4 w-4 text-[var(--color-secondary)]" />
                           )}
                         </div>
                         <span className="truncate">
-                          {team.name} <span className="text-[rgba(255,255,255,0.45)]">[{team.tag}]</span>
+                          {team.name}{" "}
+                          <span className="text-[rgba(255,255,255,0.45)]">[{team.tag}]</span>
                         </span>
                       </button>
                     ))}
@@ -183,18 +199,30 @@ export function GlobalSearch() {
                     {results.users.map((user) => (
                       <button
                         key={user.id}
-                        onClick={() => handleNavigate(`/leaderboard?view=players&q=${encodeURIComponent(user.name ?? "")}`)}
+                        onClick={() =>
+                          handleNavigate(
+                            `/leaderboard?view=players&q=${encodeURIComponent(user.name ?? "")}`
+                          )
+                        }
                         className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm text-white transition-colors hover:bg-[rgba(255,255,255,0.08)]"
                       >
-                        <div className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-[var(--color-primary)]/15">
+                        <div className="bg-[var(--color-primary)]/15 flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-lg">
                           {user.image ? (
-                            <Image src={user.image} alt={user.name ?? ""} width={32} height={32} className="h-full w-full object-cover" />
+                            <Image
+                              src={user.image}
+                              alt={user.name ?? ""}
+                              width={32}
+                              height={32}
+                              className="h-full w-full object-cover"
+                            />
                           ) : (
                             <User className="h-4 w-4 text-[var(--color-primary)]" />
                           )}
                         </div>
                         <span className="flex-1 truncate">{user.name}</span>
-                        <span className="shrink-0 text-xs text-[rgba(255,255,255,0.45)]">{user.elo} ELO</span>
+                        <span className="shrink-0 text-xs text-[rgba(255,255,255,0.45)]">
+                          {user.elo} ELO
+                        </span>
                       </button>
                     ))}
                   </div>

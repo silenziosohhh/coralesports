@@ -7,8 +7,6 @@ import { cn } from "@/lib/utils";
 import { useI18n } from "@/lib/i18n";
 import type { Clip } from "@/app/api/clips/route";
 
-// Usate solo se la fetch verso /api/clips fallisce del tutto (es. rete assente):
-// la route stessa ha già i suoi segnaposto finché CLIPS_API_URL non è configurata.
 const fallbackClips: Clip[] = [
   { id: "demo-1", url: "/bg/pvp-background.mp4", author: "Itors" },
   { id: "demo-2", url: "/bg/pvp-background.mp4", author: "endighrd" },
@@ -18,16 +16,13 @@ const fallbackClips: Clip[] = [
   { id: "demo-6", url: "/bg/pvp-background.mp4", author: "Toccamy" },
 ];
 
-/** Card minime sul nastro perché una singola copia copra anche gli schermi più larghi. */
 const MIN_BELT_CARDS = 12;
-/** Secondi di percorrenza per card: regola la velocità del nastro. */
 const SECONDS_PER_CARD = 11;
 
 type ClipCardProps = {
   clip: Clip;
   instanceKey: string;
   isAudible: boolean;
-  /** false mentre si sta guardando un'altra clip, o quando la sezione è fuori schermo. */
   playAllowed: boolean;
   onHoverChange: (instanceKey: string | null) => void;
   onToggleAudio: (instanceKey: string) => void;
@@ -37,11 +32,8 @@ function ClipCard({ clip, instanceKey, isAudible, playAllowed, onHoverChange, on
   const { t } = useI18n();
   const cardRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  // Il nastro è molto più largo dello schermo: solo poche card sono davvero visibili.
-  // Riproduciamo (e decodifichiamo) solo quelle, altrimenti il browser arranca.
   const [isOnScreen, setIsOnScreen] = useState(false);
 
-  // React non riallinea sempre l'attributo `muted` dopo il mount: lo gestiamo imperativamente.
   useEffect(() => {
     const video = videoRef.current;
     if (video) video.muted = !isAudible;
@@ -72,8 +64,6 @@ function ClipCard({ clip, instanceKey, isAudible, playAllowed, onHoverChange, on
       ref={cardRef}
       onMouseEnter={() => onHoverChange(instanceKey)}
       onMouseLeave={() => onHoverChange(null)}
-      // NB: in questo progetto le utility con opacità su white/black (bg-black/60, border-white/10)
-      // non esistono, perché il tema mappa quei colori su var(): servono valori rgba espliciti.
       className="group relative z-0 mr-5 w-[320px] flex-shrink-0 overflow-hidden rounded-[18px] bg-[#000] shadow-[0_18px_45px_rgba(0,0,0,0.45)] transition-[transform,box-shadow] duration-300 ease-out hover:z-20 hover:scale-[1.16] hover:shadow-[0_28px_70px_rgba(0,0,0,0.6)] sm:mr-7 sm:w-[460px] sm:rounded-[22px] lg:mr-8 lg:w-[560px]"
     >
       <video
@@ -84,8 +74,6 @@ function ClipCard({ clip, instanceKey, isAudible, playAllowed, onHoverChange, on
         playsInline
         preload="metadata"
         disablePictureInPicture
-        // Leggero zoom: le clip Discord hanno spesso bande nere incorporate,
-        // che object-cover da solo non può togliere perché fanno parte del frame.
         className="aspect-video w-full scale-[1.08] object-cover"
       />
 
@@ -150,7 +138,6 @@ export function ClipsOfTheWeekSection({ className }: { className?: string }) {
     };
   }, []);
 
-  // Ripete le clip finché una copia del nastro copre l'intera larghezza dello schermo.
   const belt = useMemo(() => {
     if (!clips || clips.length === 0) return [];
     const tiled: Clip[] = [];
@@ -158,8 +145,6 @@ export function ClipsOfTheWeekSection({ className }: { className?: string }) {
     return tiled;
   }, [clips]);
 
-  // Due copie in fila: quando la prima è uscita del tutto, il loop riparte sulla seconda
-  // esattamente nella stessa posizione, quindi lo stacco non si vede.
   const track = useMemo(() => [...belt, ...belt], [belt]);
 
   return (
@@ -182,7 +167,7 @@ export function ClipsOfTheWeekSection({ className }: { className?: string }) {
           transition={{ duration: 0.55, delay: 0.1 }}
           className="mt-6 text-4xl font-black uppercase tracking-tight text-white sm:text-5xl md:text-6xl"
         >
-          Clips of the <span className="gradient-text">Week</span>
+          {t("clips.titlePre")} <span className="gradient-text">{t("clips.titleAccent")}</span>
         </motion.h2>
 
         <motion.p
@@ -210,9 +195,6 @@ export function ClipsOfTheWeekSection({ className }: { className?: string }) {
           </div>
         ) : (
           <div
-            // Il nastro si ferma da solo sotto al cursore (regola :hover in globals.css) e
-            // quando la sezione è fuori schermo. py generoso: lascia spazio alla card
-            // ingrandita, che altrimenti verrebbe tagliata dall'overflow.
             className={cn("clips-conveyor flex w-max py-12", !beltInView && "clips-conveyor--paused")}
             style={{ ["--clips-conveyor-duration" as string]: `${belt.length * SECONDS_PER_CARD}s` }}
           >
@@ -224,8 +206,6 @@ export function ClipsOfTheWeekSection({ className }: { className?: string }) {
                   clip={clip}
                   instanceKey={instanceKey}
                   isAudible={audibleKey === instanceKey}
-                  // Mentre si guarda una clip il nastro è fermo: le altre si mettono in pausa,
-                  // così l'attenzione (e la CPU) vanno tutte su quella sotto al cursore.
                   playAllowed={beltInView && (hoveredKey === null || hoveredKey === instanceKey)}
                   onHoverChange={setHoveredKey}
                   onToggleAudio={(key) => setAudibleKey((current) => (current === key ? null : key))}

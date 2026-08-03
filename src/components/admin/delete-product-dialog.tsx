@@ -46,11 +46,11 @@ export function DeleteProductDialog({ product }: { product: Product }) {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button size="sm" variant="destructive">
-          <Trash2 className="h-4 w-4 mr-1" />
+          <Trash2 className="mr-1 h-4 w-4" />
           Elimina
         </Button>
       </DialogTrigger>
-      <DialogContent className="glass-card">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>Elimina Prodotto</DialogTitle>
           <DialogDescription>

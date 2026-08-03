@@ -3,7 +3,9 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { CompetitionPageShell } from "@/components/competition/competition-page-shell";
 import { TurnstileWidget } from "@/components/security/turnstile-widget";
 
 export function AcceptInviteClient({ token, teamId }: { token: string; teamId: string }) {
@@ -47,15 +49,25 @@ export function AcceptInviteClient({ token, teamId }: { token: string; teamId: s
   };
 
   return (
-    <div className="container mx-auto px-4 py-16">
-      <div className="mx-auto max-w-md space-y-4 rounded-2xl border border-[var(--border-color)] bg-[var(--bg-secondary)] p-6 text-center">
-        <h1 className="text-2xl font-bold text-[var(--text-primary)]">Accetta invito</h1>
-        <p className="text-sm text-[var(--text-secondary)]">
+    <CompetitionPageShell
+      eyebrow="Invito a un team"
+      title="Accetta"
+      accent="l'invito"
+      description="Un passaggio di verifica e sei dentro: completa il captcha per unirti al team che ti ha invitato."
+    >
+      <article className="relative mx-auto max-w-md overflow-hidden rounded-[28px] border-2 border-white/20 bg-[#061b3b]/68 p-7 text-center shadow-[0_26px_70px_rgba(0,20,65,0.34)] backdrop-blur-2xl sm:p-8">
+        <div aria-hidden className="absolute -right-24 -top-24 h-56 w-56 rounded-full bg-[#57ffff]/16 blur-3xl" />
+
+        <span className="relative mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-white/[0.06] text-[#57ffff]">
+          <UserPlus className="h-6 w-6" />
+        </span>
+        <h2 className="relative mt-4 text-2xl font-black tracking-[-0.03em] text-white">Accetta invito</h2>
+        <p className="relative mt-2 text-sm leading-relaxed text-white/62">
           Completa il captcha per entrare nel team.
         </p>
 
         {siteKey ? (
-          <div className="flex justify-center">
+          <div className="relative mt-6 flex justify-center">
             <TurnstileWidget
               siteKey={siteKey}
               onToken={(t) => setCaptchaToken(t)}
@@ -63,18 +75,30 @@ export function AcceptInviteClient({ token, teamId }: { token: string; teamId: s
             />
           </div>
         ) : (
-          <p className="text-sm text-red-400">Captcha non configurato.</p>
+          <p className="relative mt-6 rounded-2xl border border-red-500/25 bg-red-500/[0.08] px-4 py-3 text-sm font-semibold text-red-300">
+            Captcha non configurato.
+          </p>
         )}
 
-        <div className="flex gap-2">
-          <Button variant="outline" className="flex-1" onClick={() => router.push("/teams")} disabled={submitting}>
+        <div className="relative mt-6 flex gap-2">
+          <Button
+            variant="outline"
+            className="flex-1 rounded-xl font-black"
+            onClick={() => router.push("/teams")}
+            disabled={submitting}
+          >
             Annulla
           </Button>
-          <Button className="flex-1" onClick={acceptInvite} disabled={submitting || !captchaToken || !siteKey}>
-            {submitting ? "Verifica..." : "Accetta"}
+          <Button
+            variant="cyan"
+            className="flex-1 rounded-xl font-black"
+            onClick={acceptInvite}
+            disabled={submitting || !captchaToken || !siteKey}
+          >
+            {submitting ? "Verifica…" : "Accetta"}
           </Button>
         </div>
-      </div>
-    </div>
+      </article>
+    </CompetitionPageShell>
   );
 }

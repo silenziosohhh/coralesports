@@ -20,7 +20,6 @@ export default async function AdminAnalyticsPage() {
     redirect("/profile");
   }
 
-  // Fetch analytics data
   const [
     totalUsers,
     activeUsers,
@@ -29,6 +28,9 @@ export default async function AdminAnalyticsPage() {
     activeTournaments,
     totalMatches,
     completedMatches,
+    topPlayers,
+    topTeams,
+    recentTournaments,
   ] = await Promise.all([
     prisma.user.count(),
     prisma.user.count({ where: { status: "ACTIVE" } }),
@@ -37,53 +39,47 @@ export default async function AdminAnalyticsPage() {
     prisma.tournament.count({ where: { status: "LIVE" } }),
     prisma.match.count(),
     prisma.match.count({ where: { status: "COMPLETED" } }),
-  ]);
-
-  // Top players by ELO
-  const topPlayers = await prisma.user.findMany({
-    take: 10,
-    orderBy: { elo: "desc" },
-    select: {
-      name: true,
-      discordTag: true,
-      elo: true,
-      wins: true,
-      losses: true,
-    },
-  });
-
-  // Top teams by ELO
-  const topTeams = await prisma.team.findMany({
-    take: 10,
-    orderBy: { elo: "desc" },
-    select: {
-      name: true,
-      tag: true,
-      elo: true,
-      wins: true,
-      losses: true,
-    },
-  });
-
-  // Recent tournaments
-  const recentTournaments = await prisma.tournament.findMany({
-    take: 5,
-    orderBy: { createdAt: "desc" },
-    select: {
-      name: true,
-      status: true,
-      _count: {
-        select: {
-          teams: true,
-          matches: true,
+    prisma.user.findMany({
+      take: 10,
+      orderBy: { elo: "desc" },
+      select: {
+        name: true,
+        discordTag: true,
+        elo: true,
+        wins: true,
+        losses: true,
+      },
+    }),
+    prisma.team.findMany({
+      take: 10,
+      orderBy: { elo: "desc" },
+      select: {
+        name: true,
+        tag: true,
+        elo: true,
+        wins: true,
+        losses: true,
+      },
+    }),
+    prisma.tournament.findMany({
+      take: 5,
+      orderBy: { createdAt: "desc" },
+      select: {
+        name: true,
+        status: true,
+        _count: {
+          select: {
+            teams: true,
+            matches: true,
+          },
         },
       },
-    },
-  });
+    }),
+  ]);
 
   return (
-    <div className="min-h-screen bg-[var(--bg-primary)] py-12">
-      <div className="container mx-auto px-4">
+    <main className="admin-page-shell min-h-screen px-4 pb-32 pt-28 sm:pt-32">
+      <div className="admin-page-content mx-auto w-full max-w-7xl">
         <div className="mb-8 flex items-center justify-between">
           <div>
             <h1 className="page-title mb-2 text-4xl font-bold">Analytics</h1>
@@ -94,7 +90,6 @@ export default async function AdminAnalyticsPage() {
           </Button>
         </div>
 
-        {/* Overview Stats */}
         <div className="mb-8 grid gap-4 md:grid-cols-4">
           <Card className="glass-card border-cyan/20">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -104,7 +99,8 @@ export default async function AdminAnalyticsPage() {
             <CardContent>
               <div className="text-2xl font-bold text-white">{totalUsers}</div>
               <p className="text-xs text-gray">
-                {activeUsers} attivi ({Math.round((activeUsers / totalUsers) * 100)}%)
+                {activeUsers} attivi (
+                {totalUsers > 0 ? Math.round((activeUsers / totalUsers) * 100) : 0}%)
               </p>
             </CardContent>
           </Card>
@@ -144,7 +140,6 @@ export default async function AdminAnalyticsPage() {
         </div>
 
         <div className="grid gap-8 lg:grid-cols-2">
-          {/* Top Players */}
           <Card className="glass-card border-cyan/20">
             <CardHeader>
               <CardTitle>Top 10 Giocatori</CardTitle>
@@ -155,10 +150,10 @@ export default async function AdminAnalyticsPage() {
                 {topPlayers.map((player, index) => (
                   <div
                     key={index}
-                    className="flex items-center justify-between rounded-lg border border-cyan/10 bg-slate-dark/50 p-3"
+                    className="border-cyan/10 bg-slate-dark/50 flex items-center justify-between rounded-lg border p-3"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-cyan/10 text-sm font-bold text-cyan">
+                      <div className="bg-cyan/10 flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold text-cyan">
                         #{index + 1}
                       </div>
                       <div>
@@ -180,7 +175,6 @@ export default async function AdminAnalyticsPage() {
             </CardContent>
           </Card>
 
-          {/* Top Teams */}
           <Card className="glass-card border-cyan/20">
             <CardHeader>
               <CardTitle>Top 10 Teams</CardTitle>
@@ -191,7 +185,7 @@ export default async function AdminAnalyticsPage() {
                 {topTeams.map((team, index) => (
                   <div
                     key={index}
-                    className="flex items-center justify-between rounded-lg border border-cyan/10 bg-slate-dark/50 p-3"
+                    className="border-cyan/10 bg-slate-dark/50 flex items-center justify-between rounded-lg border p-3"
                   >
                     <div className="flex items-center gap-3">
                       <div className="flex h-8 w-8 items-center justify-center rounded-full bg-purple-500/10 text-sm font-bold text-purple-500">
@@ -199,7 +193,7 @@ export default async function AdminAnalyticsPage() {
                       </div>
                       <div>
                         <p className="font-semibold text-white">
-                          {team.name} <span className="text-gray text-sm">[{team.tag}]</span>
+                          {team.name} <span className="text-sm text-gray">[{team.tag}]</span>
                         </p>
                         <p className="text-xs text-gray">
                           W/L: {team.wins}/{team.losses}
@@ -217,7 +211,6 @@ export default async function AdminAnalyticsPage() {
           </Card>
         </div>
 
-        {/* Recent Tournaments */}
         <Card className="glass-card border-cyan/20 mt-8">
           <CardHeader>
             <CardTitle>Tornei Recenti</CardTitle>
@@ -228,7 +221,7 @@ export default async function AdminAnalyticsPage() {
               {recentTournaments.map((tournament, index) => (
                 <div
                   key={index}
-                  className="flex items-center justify-between rounded-lg border border-cyan/10 bg-slate-dark/50 p-3"
+                  className="border-cyan/10 bg-slate-dark/50 flex items-center justify-between rounded-lg border p-3"
                 >
                   <div className="flex items-center gap-3">
                     <Trophy className="h-5 w-5 text-cyan" />
@@ -246,6 +239,6 @@ export default async function AdminAnalyticsPage() {
           </CardContent>
         </Card>
       </div>
-    </div>
+    </main>
   );
 }

@@ -18,7 +18,6 @@ type StatDefinition = {
   format: (value: number, locale: Locale) => string;
 };
 
-// Mostrati finché il database non restituisce dati reali (es. DB non raggiungibile).
 const placeholderStats: Stats = {
   players: 1247,
   tournaments: 38,
@@ -44,7 +43,15 @@ const statDefinitions: StatDefinition[] = [
   },
 ];
 
-function CountUp({ value, format, active }: { value: number; format: (value: number) => string; active: boolean }) {
+function CountUp({
+  value,
+  format,
+  active,
+}: {
+  value: number;
+  format: (value: number) => string;
+  active: boolean;
+}) {
   const [display, setDisplay] = useState(0);
 
   useEffect(() => {
@@ -74,6 +81,7 @@ export function AnimatedStats({ className }: { className?: string }) {
   const isInView = useInView(containerRef, { once: true, margin: "-80px" });
 
   useEffect(() => {
+    if (!isInView) return;
     let cancelled = false;
 
     fetch("/api/stats")
@@ -99,7 +107,7 @@ export function AnimatedStats({ className }: { className?: string }) {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [isInView]);
 
   return (
     <div ref={containerRef} className={cn("relative", className)}>
@@ -118,8 +126,8 @@ export function AnimatedStats({ className }: { className?: string }) {
             >
               <p
                 className={cn(
-                  "text-6xl font-black leading-none tracking-tight tabular-nums sm:text-7xl md:text-8xl",
-                  def.highlight ? "gradient-text" : "text-white/85",
+                  "text-6xl font-black tabular-nums leading-none tracking-tight sm:text-7xl md:text-8xl",
+                  def.highlight ? "gradient-text" : "text-white/85"
                 )}
               >
                 <CountUp

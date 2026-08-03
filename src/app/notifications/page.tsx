@@ -3,12 +3,15 @@
 import { useCallback, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Bell, Users, Trophy, Calendar, AlertCircle, CheckCheck, Trash2, X } from "lucide-react";
+import { CompetitionPageShell } from "@/components/competition/competition-page-shell";
+import { Bell, Users, Trophy, Calendar, AlertCircle, CheckCheck, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
+
+const PANEL =
+  "relative overflow-hidden rounded-[28px] border-2 border-white/20 bg-[#061b3b]/68 shadow-[0_26px_70px_rgba(0,20,65,0.34)] backdrop-blur-2xl";
 
 interface Notification {
   id: string;
@@ -113,102 +116,99 @@ export default function NotificationsPage() {
     const notifDate = new Date(date);
     const seconds = Math.floor((now.getTime() - notifDate.getTime()) / 1000);
 
-    if (seconds < 60) return "Just now";
-    if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
-    if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
-    if (seconds < 604800) return `${Math.floor(seconds / 86400)}d ago`;
+    if (seconds < 60) return "Adesso";
+    if (seconds < 3600) return `${Math.floor(seconds / 60)} min fa`;
+    if (seconds < 86400) return `${Math.floor(seconds / 3600)} h fa`;
+    if (seconds < 604800) return `${Math.floor(seconds / 86400)} g fa`;
     return notifDate.toLocaleDateString();
   };
 
-  if (loading) {
   return (
-    <div className="min-h-screen bg-transparent py-12">
-        <div className="container mx-auto px-4">
-          <p className="text-center text-gray">Loading notifications...</p>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="min-h-screen bg-transparent py-12">
-      <div className="container mx-auto px-4 max-w-4xl">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center space-x-3">
-              <Bell className="h-8 w-8 text-cyan" />
-              <h1 className="page-title text-4xl font-bold">Notifications</h1>
-              {unreadCount > 0 && (
-                <Badge variant="default" className="bg-cyan text-navy">
-                  {unreadCount} new
-                </Badge>
-              )}
-            </div>
-            {unreadCount > 0 && (
-              <Button onClick={markAllAsRead} variant="outline" size="sm">
-                <CheckCheck className="h-4 w-4 mr-2" />
-                Mark all as read
-              </Button>
-            )}
-          </div>
-          <p className="text-gray">Stay updated with your tournament activities</p>
-        </div>
-
-        {/* Filter Tabs */}
-        <div className="flex space-x-2 mb-6">
+    <CompetitionPageShell
+      eyebrow="Il tuo centro aggiornamenti"
+      title="Notifiche"
+      description="Inviti ai team, match programmati, risultati e comunicazioni dello staff: tutto quello che ti riguarda in un posto solo."
+      action={
+        unreadCount > 0 ? (
+          <Button onClick={markAllAsRead} variant="cyan" size="lg" className="h-12 rounded-xl px-6 font-black">
+            <CheckCheck className="mr-2 h-4 w-4" />
+            Segna tutte come lette
+          </Button>
+        ) : null
+      }
+    >
+      <div className="mx-auto w-full max-w-4xl">
+        <div className="mb-6 flex flex-wrap items-center gap-2">
           <Button
-            variant={filter === "all" ? "default" : "outline"}
+            variant={filter === "all" ? "cyan" : "outline"}
             onClick={() => setFilter("all")}
-            size="sm"
+            className="rounded-xl font-black"
           >
-            All
+            Tutte
           </Button>
           <Button
-            variant={filter === "unread" ? "default" : "outline"}
+            variant={filter === "unread" ? "cyan" : "outline"}
             onClick={() => setFilter("unread")}
-            size="sm"
+            className="rounded-xl font-black"
           >
-            Unread ({unreadCount})
+            Da leggere
           </Button>
+          {unreadCount > 0 ? (
+            <Badge className="ml-1 border-0 bg-[#57ffff] font-black text-[#00152b]">{unreadCount} nuove</Badge>
+          ) : null}
         </div>
 
-        {/* Notifications List */}
-        <div className="space-y-3">
-          {notifications.length === 0 ? (
-            <Card className="bg-darkslategray-100 border-deepskyblue-300">
-              <CardContent className="py-12 text-center">
-                <Bell className="h-12 w-12 text-gray mx-auto mb-4" />
-                <p className="text-gray">No notifications yet</p>
-              </CardContent>
-            </Card>
-          ) : (
-            notifications.map((notification) => {
-              const Icon = notificationIcons[notification.type as keyof typeof notificationIcons] || AlertCircle;
-              const iconColor = notificationColors[notification.type as keyof typeof notificationColors] || "text-gray";
+        {loading ? (
+          <div className={`${PANEL} px-6 py-16 text-center`}>
+            <p className="relative text-sm font-semibold text-white/60">Caricamento notifiche…</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {notifications.length === 0 ? (
+              <article className={`${PANEL} px-6 py-16 text-center`}>
+                <div
+                  aria-hidden
+                  className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(0,157,255,0.14),transparent_52%)]"
+                />
+                <Bell className="relative mx-auto h-10 w-10 text-cyan-300/60" />
+                <h2 className="relative mt-5 text-2xl font-black text-white">
+                  {filter === "unread" ? "Sei in pari" : "Nessuna notifica"}
+                </h2>
+                <p className="relative mx-auto mt-3 max-w-lg text-sm leading-relaxed text-white/45">
+                  {filter === "unread"
+                    ? "Hai già letto tutto. Le nuove notifiche compariranno qui."
+                    : "Appena ci sarà un aggiornamento sui tuoi team o tornei lo troverai qui."}
+                </p>
+              </article>
+            ) : (
+              notifications.map((notification) => {
+                const Icon = notificationIcons[notification.type as keyof typeof notificationIcons] || AlertCircle;
+                const iconColor =
+                  notificationColors[notification.type as keyof typeof notificationColors] || "text-white/60";
 
-              return (
-                <Card
-                  key={notification.id}
-                  className={`bg-darkslategray-100 border-deepskyblue-300 transition-all hover:border-deepskyblue-100 ${
-                    !notification.read ? "bg-deepskyblue-800" : ""
-                  }`}
-                >
-                  <CardContent className="p-4">
-                    <div className="flex items-start space-x-4">
-                      <div className={`p-2 rounded-lg bg-slate-dark/50 ${iconColor}`}>
+                return (
+                  <article
+                    key={notification.id}
+                    className={`relative overflow-hidden rounded-2xl border p-4 backdrop-blur-xl transition-colors ${
+                      notification.read
+                        ? "border-white/14 bg-[#061b3b]/48 hover:border-white/25"
+                        : "border-[#57ffff]/35 bg-[#061b3b]/68 hover:border-[#57ffff]/55"
+                    }`}
+                  >
+                    <div className="flex items-start gap-4">
+                      <span className={`grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-white/[0.06] ${iconColor}`}>
                         <Icon className="h-5 w-5" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between mb-1">
-                          <h3 className="font-semibold text-white">{notification.title}</h3>
-                          <div className="flex items-center space-x-2 ml-2">
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <div className="mb-1 flex items-start justify-between gap-2">
+                          <h3 className="font-black tracking-[-0.01em] text-white">{notification.title}</h3>
+                          <div className="flex shrink-0 items-center gap-1">
                             {!notification.read && (
                               <Button
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => markAsRead(notification.id)}
-                                className="h-8 px-2"
+                                className="h-8 px-2 text-white/70 hover:text-white"
                               >
                                 <CheckCheck className="h-4 w-4" />
                               </Button>
@@ -223,26 +223,29 @@ export default function NotificationsPage() {
                             </Button>
                           </div>
                         </div>
-                        <p className="text-sm text-gray mb-2">{notification.message}</p>
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs text-gray">{getTimeAgo(notification.createdAt)}</span>
+                        <p className="mb-2 text-sm leading-relaxed text-white/68">{notification.message}</p>
+                        <div className="flex items-center justify-between gap-3">
+                          <span className="text-xs font-semibold text-white/42">
+                            {getTimeAgo(notification.createdAt)}
+                          </span>
                           {notification.link && (
-                            <Link href={notification.link}>
-                              <Button variant="link" size="sm" className="h-auto p-0 text-cyan">
-                                View details →
-                              </Button>
+                            <Link
+                              href={notification.link}
+                              className="text-xs font-black text-[#57ffff] transition-opacity hover:opacity-80"
+                            >
+                              Vedi dettagli →
                             </Link>
                           )}
                         </div>
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
-              );
-            })
-          )}
-        </div>
+                  </article>
+                );
+              })
+            )}
+          </div>
+        )}
       </div>
-    </div>
+    </CompetitionPageShell>
   );
 }

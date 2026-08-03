@@ -19,7 +19,6 @@ export async function GET(request: Request) {
         email: true,
         bio: true,
         minecraftUsername: true,
-        // Add preferences fields if they exist in your schema
       },
     });
 

@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
 export type Champion = {
-  /** Nome Minecraft: serve a renderizzare la skin. Null se il giocatore non l'ha collegato. */
   username: string | null;
   displayName: string;
   elo: number;
@@ -10,8 +11,6 @@ export type Champion = {
   tournamentName: string;
 };
 
-// Mostrato finché il database non restituisce dati reali (es. DB non raggiungibile
-// o nessun torneo in corso), come già fanno /api/stats e /api/clips.
 const placeholderChampion: Champion = {
   username: "MrJak3s",
   displayName: "MrJak3s",
@@ -20,10 +19,6 @@ const placeholderChampion: Champion = {
   tournamentName: "Torneo principale",
 };
 
-/**
- * "Torneo principale" = quello dal vivo; se non ce n'è uno, il più recente
- * tra quelli pubblicati (stesso criterio della pagina Classifica).
- */
 async function findMainTournament() {
   const live = await prisma.tournament.findFirst({
     where: { status: "LIVE" },
@@ -48,8 +43,6 @@ export async function GET() {
       return NextResponse.json({ champion: placeholderChampion, placeholder: true });
     }
 
-    // Stesso ordinamento della classifica giocatori, così il "primo" qui
-    // è lo stesso che si vede in /leaderboard.
     const top = await prisma.user.findFirst({
       where: {
         status: "ACTIVE",

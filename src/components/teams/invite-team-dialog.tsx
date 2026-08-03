@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -88,7 +89,6 @@ export function InviteTeamDialog({
       }
       await navigator.share({ title: `Invito ${teamName}`, url: inviteUrl });
     } catch {
-      // user cancelled share
     }
   };
 
@@ -123,15 +123,16 @@ export function InviteTeamDialog({
       }}
     >
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="sm:max-w-[560px] glass-card border-cyan-border">
+      <DialogContent className="max-h-[92vh] overflow-y-auto sm:max-w-[560px]">
         <DialogHeader>
           <DialogTitle className="gradient-text text-2xl">Invita nel team</DialogTitle>
           <DialogDescription className="text-[var(--text-secondary)]">
-            Crea un link invito per <strong>{teamName}</strong>. Puoi condividerlo o far scansionare il QR code.
+            Crea un link invito per <strong>{teamName}</strong>. Puoi condividerlo o far scansionare
+            il QR code.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4 mt-2">
+        <div className="mt-2 space-y-4">
           {!inviteUrl ? (
             <div className="space-y-3">
               <Button
@@ -144,7 +145,11 @@ export function InviteTeamDialog({
                 {(loadingExisting || loading) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Mostra link esistente
               </Button>
-              <Button onClick={createInvite} disabled={loading || loadingExisting} className="w-full">
+              <Button
+                onClick={createInvite}
+                disabled={loading || loadingExisting}
+                className="w-full"
+              >
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Genera nuovo link invito
               </Button>
@@ -154,9 +159,13 @@ export function InviteTeamDialog({
               <div className="rounded-lg border border-[var(--border-color)] bg-[var(--bg-secondary)] p-4">
                 <div className="flex items-center justify-between gap-3">
                   <div className="min-w-0">
-                    <div className="text-sm font-medium text-[var(--text-primary)]">Link invito</div>
+                    <div className="text-sm font-medium text-[var(--text-primary)]">
+                      Link invito
+                    </div>
                     {expiresLabel && (
-                      <div className="text-xs text-[var(--text-secondary)]">Scade: {expiresLabel}</div>
+                      <div className="text-xs text-[var(--text-secondary)]">
+                        Scade: {expiresLabel}
+                      </div>
                     )}
                   </div>
                 </div>
@@ -205,7 +214,13 @@ export function InviteTeamDialog({
                 </div>
 
                 <div className="mt-3">
-                  <Button type="button" variant="outline" onClick={createInvite} disabled={loading} className="w-full">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={createInvite}
+                    disabled={loading}
+                    className="w-full"
+                  >
                     {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     <RefreshCcw className="mr-2 h-4 w-4" />
                     Rigenera link
@@ -214,7 +229,7 @@ export function InviteTeamDialog({
               </div>
 
               <div className="rounded-lg border border-[var(--border-color)] bg-[var(--bg-secondary)] p-4">
-                <div className="flex items-center gap-2 mb-3 text-sm font-medium text-[var(--text-primary)]">
+                <div className="mb-3 flex items-center gap-2 text-sm font-medium text-[var(--text-primary)]">
                   <QrCode className="h-4 w-4" />
                   QR Code
                 </div>
@@ -267,9 +282,12 @@ function InviteQr({ inviteUrl }: { inviteUrl: string }) {
 
   return (
     <div className="flex items-center justify-center">
-      <img
+      <Image
         src={src}
         alt="QR code invito"
+        width={220}
+        height={220}
+        unoptimized
         className="h-[220px] w-[220px] rounded-lg border border-white/10 bg-white p-2"
       />
     </div>

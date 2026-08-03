@@ -30,7 +30,6 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async jwt({ token, user }) {
-      // Initial sign in
       if (user) {
         const dbUser = await prisma.user.findUnique({
           where: { id: user.id },
@@ -60,7 +59,6 @@ export const authOptions: NextAuthOptions = {
         }
       }
 
-      // Keep token in sync when user updates profile fields (e.g. minecraftUsername)
       if (token?.id && token.minecraftUsername == null) {
         const dbUser = await prisma.user.findUnique({
           where: { id: token.id as string },
@@ -104,7 +102,6 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
     async signIn({ user }) {
-      // Check if user is banned
       if (user.id) {
         const dbUser = await prisma.user.findUnique({
           where: { id: user.id },
@@ -118,13 +115,10 @@ export const authOptions: NextAuthOptions = {
       return true;
     },
     async redirect({ url, baseUrl }) {
-      // Redirect to dashboard after sign in
       if (url === baseUrl || url === `${baseUrl}/`) {
         return `${baseUrl}/dashboard`;
       }
-      // Allows relative callback URLs
       if (url.startsWith("/")) return `${baseUrl}${url}`;
-      // Allows callback URLs on the same origin
       if (new URL(url).origin === baseUrl) return url;
       return baseUrl;
     },

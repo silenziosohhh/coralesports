@@ -73,7 +73,7 @@ export function CreateCategoryDialog() {
           Nuova Categoria
         </Button>
       </DialogTrigger>
-      <DialogContent className="glass-card sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>Crea Nuova Categoria</DialogTitle>
           <DialogDescription>
@@ -132,7 +132,9 @@ export function CreateCategoryDialog() {
                 placeholder="0"
                 min="0"
               />
-              <p className="text-xs text-white/60">Le categorie con numero più basso appaiono prima</p>
+              <p className="text-xs text-white/60">
+                Le categorie con numero più basso appaiono prima
+              </p>
             </div>
 
             <div className="flex items-center gap-2">
@@ -149,7 +151,12 @@ export function CreateCategoryDialog() {
             </div>
           </div>
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setOpen(false)} disabled={loading}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setOpen(false)}
+              disabled={loading}
+            >
               Annulla
             </Button>
             <Button type="submit" disabled={loading}>

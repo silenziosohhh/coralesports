@@ -15,13 +15,16 @@ interface Tournament {
   id: string;
   name: string;
   description: string | null;
+  banner: string | null;
   format: string;
   teamMode: string;
   playersPerTeam: number;
   maxTeams: number;
   prizePool: string | null;
-  startDate: Date;
-  endDate: Date | null;
+  registrationStart: string | null;
+  registrationEnd: string | null;
+  startDate: string;
+  endDate: string | null;
   status: string;
   rules: string | null;
   createdBy: {
@@ -58,8 +61,13 @@ const getStatusColor = (status: string) => {
 
 export function TournamentsClient({ tournaments }: TournamentsClientProps) {
   const [editingTournament, setEditingTournament] = useState<Tournament | null>(null);
-  const [deletingTournament, setDeletingTournament] = useState<{ id: string; name: string } | null>(null);
-  const [finishingTournament, setFinishingTournament] = useState<{ id: string; name: string } | null>(null);
+  const [deletingTournament, setDeletingTournament] = useState<{ id: string; name: string } | null>(
+    null
+  );
+  const [finishingTournament, setFinishingTournament] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
 
   return (
     <>
@@ -67,29 +75,30 @@ export function TournamentsClient({ tournaments }: TournamentsClientProps) {
         {tournaments.map((tournament) => (
           <div
             key={tournament.id}
-            className="flex items-center justify-between rounded-lg border border-cyan/10 bg-slate-dark/50 p-4"
+            className="border-cyan/10 bg-slate-dark/50 flex items-center justify-between rounded-lg border p-4"
           >
             <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-cyan/10">
+              <div className="bg-cyan/10 flex h-12 w-12 items-center justify-center rounded-lg">
                 <Trophy className="h-6 w-6 text-cyan" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
                   <p className="font-semibold text-white">{tournament.name}</p>
-                  <Badge variant={getStatusColor(tournament.status)}>
-                    {tournament.status}
-                  </Badge>
+                  <Badge variant={getStatusColor(tournament.status)}>{tournament.status}</Badge>
                   <Badge variant="outline">{tournament.format}</Badge>
                   <Badge variant="secondary">{tournament.teamMode}</Badge>
                 </div>
                 <p className="text-sm text-gray">
                   Creato da: {tournament.createdBy.discordTag || tournament.createdBy.name}
                 </p>
-                <div className="mt-1 flex gap-4 text-xs text-gray/80">
+                <div className="text-gray/80 mt-1 flex gap-4 text-xs">
                   <span>
                     Inizio: {format(new Date(tournament.startDate), "dd MMM yyyy", { locale: it })}
                   </span>
-                  <span>Teams: {tournament._count.teams}/{tournament.maxTeams > 0 ? tournament.maxTeams : "∞"}</span>
+                  <span>
+                    Teams: {tournament._count.teams}/
+                    {tournament.maxTeams > 0 ? tournament.maxTeams : "∞"}
+                  </span>
                   <span>Player/Team: {tournament.playersPerTeam}</span>
                   <span>Partite: {tournament._count.matches}</span>
                   {tournament.prizePool && <span>Prize: {tournament.prizePool}</span>}
@@ -104,20 +113,18 @@ export function TournamentsClient({ tournaments }: TournamentsClientProps) {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setFinishingTournament({ id: tournament.id, name: tournament.name })}
+                  onClick={() =>
+                    setFinishingTournament({ id: tournament.id, name: tournament.name })
+                  }
                 >
                   Termina evento
                 </Button>
               )}
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => setEditingTournament(tournament)}
-              >
+              <Button variant="outline" size="sm" onClick={() => setEditingTournament(tournament)}>
                 Modifica
               </Button>
-              <Button 
-                variant="destructive" 
+              <Button
+                variant="destructive"
                 size="sm"
                 onClick={() => setDeletingTournament({ id: tournament.id, name: tournament.name })}
               >

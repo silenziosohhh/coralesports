@@ -2,7 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { TournamentFormat, TournamentStatus } from "@prisma/client";
 import { playersPerTeamFromMode, validateTournamentDates } from "@/lib/tournament-rules";
+import {
+  DEMO_CONTENT_ENABLED,
+  getDemoTournaments,
+  toDemoTournamentApi,
+} from "@/lib/demo-content";
 
 function generateSlug(name: string): string {
   return name
@@ -16,7 +22,11 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const status = searchParams.get("status");
 
-    const where = status ? { status: status as any } : {};
+    if (status && !Object.values(TournamentStatus).includes(status as TournamentStatus)) {
+      return NextResponse.json({ error: "Stato torneo non valido" }, { status: 400 });
+    }
+
+    const where = status ? { status: status as TournamentStatus } : {};
 
     const tournaments = await prisma.tournament.findMany({
       where,
@@ -40,13 +50,31 @@ export async function GET(req: NextRequest) {
       },
     });
 
-    return NextResponse.json(tournaments);
+    return NextResponse.json(tournaments, { headers: { "X-Coral-Data-Source": "api" } });
   } catch (error) {
+    if (DEMO_CONTENT_ENABLED) {
+      const { searchParams } = new URL(req.url);
+      const status = searchParams.get("status");
+      console.warn("Tournament API unavailable; using demo tournaments.", error);
+
+      const tournaments = getDemoTournaments()
+        .filter((tournament) => !status || tournament.status === status)
+        .map((tournament) => {
+          const demo = toDemoTournamentApi(tournament);
+          return {
+            ...demo,
+            createdBy: null,
+            _count: { teams: demo._count.teams, matches: 0 },
+          };
+        });
+
+      return NextResponse.json(tournaments, {
+        headers: { "X-Coral-Data-Source": "demo" },
+      });
+    }
+
     console.error("Error fetching tournaments:", error);
-    return NextResponse.json(
-      { error: "Errore nel recupero dei tornei" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Errore nel recupero dei tornei" }, { status: 500 });
   }
 }
 
@@ -57,12 +85,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Non autorizzato" }, { status: 401 });
     }
 
-    // Solo admin e super admin possono creare tornei
     if (!["ADMIN", "SUPER_ADMIN"].includes(session.user.role)) {
-      return NextResponse.json(
-        { error: "Non hai i permessi per creare tornei" },
-        { status: 403 }
-      );
+      return NextResponse.json({ error: "Non hai i permessi per creare tornei" }, { status: 403 });
     }
 
     const body = await req.json();
@@ -83,7 +107,6 @@ export async function POST(req: NextRequest) {
       checkInEnd,
     } = body;
 
-    // Validazione
     if (
       typeof name !== "string" ||
       typeof format !== "string" ||
@@ -99,7 +122,10 @@ export async function POST(req: NextRequest) {
       !rules.trim()
     ) {
       return NextResponse.json(
-        { error: "Banner, titolo, descrizione, ruleset, formato, modalità team, inizio e fine torneo sono obbligatori" },
+        {
+          error:
+            "Banner, titolo, descrizione, ruleset, formato, modalità team, inizio e fine torneo sono obbligatori",
+        },
         { status: 400 }
       );
     }
@@ -107,11 +133,19 @@ export async function POST(req: NextRequest) {
     const resolvedTeamMode =
       teamMode === "TRIO" || teamMode === "DUO" || teamMode === "SOLO" ? teamMode : null;
 
+    const resolvedFormat = Object.values(TournamentFormat).includes(format as TournamentFormat)
+      ? (format as TournamentFormat)
+      : null;
+
     if (!resolvedTeamMode) {
       return NextResponse.json(
         { error: "Modalità team non valida (SOLO/DUO/TRIO)" },
         { status: 400 }
       );
+    }
+
+    if (!resolvedFormat) {
+      return NextResponse.json({ error: "Formato torneo non valido" }, { status: 400 });
     }
 
     const resolvedPlayersPerTeam = playersPerTeamFromMode(resolvedTeamMode);
@@ -131,18 +165,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: dateValidation.error }, { status: 400 });
     }
 
-    // Genera slug unico
     let slug = generateSlug(name);
     let slugExists = await prisma.tournament.findUnique({ where: { slug } });
     let counter = 1;
-    
+
     while (slugExists) {
       slug = `${generateSlug(name)}-${counter}`;
       slugExists = await prisma.tournament.findUnique({ where: { slug } });
       counter++;
     }
 
-    // Crea il torneo
     const tournament = await prisma.tournament.create({
       data: {
         name,
@@ -150,7 +182,7 @@ export async function POST(req: NextRequest) {
         description,
         rules,
         banner,
-        format,
+        format: resolvedFormat,
         teamMode: resolvedTeamMode,
         playersPerTeam: resolvedPlayersPerTeam,
         status: "DRAFT",
@@ -176,7 +208,6 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // Crea audit log
     await prisma.auditLog.create({
       data: {
         userId: session.user.id,
@@ -195,9 +226,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(tournament, { status: 201 });
   } catch (error) {
     console.error("Error creating tournament:", error);
-    return NextResponse.json(
-      { error: "Errore nella creazione del torneo" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Errore nella creazione del torneo" }, { status: 500 });
   }
 }

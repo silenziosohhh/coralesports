@@ -3,11 +3,14 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { playersPerTeamFromMode, validateTournamentDates } from "@/lib/tournament-rules";
+import {
+  DEMO_CONTENT_ENABLED,
+  getDemoTournament,
+  toDemoTournamentApi,
+} from "@/lib/demo-content";
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const tournament = await prisma.tournament.findUnique({
       where: { id: params.id },
@@ -33,15 +36,27 @@ export async function GET(
       },
     });
 
-    if (!tournament) {
-      return NextResponse.json(
-        { error: "Tournament not found" },
-        { status: 404 }
-      );
+    if (tournament) {
+      return NextResponse.json(tournament, { headers: { "X-Coral-Data-Source": "api" } });
     }
 
-    return NextResponse.json(tournament);
+    const demoTournament = DEMO_CONTENT_ENABLED ? getDemoTournament(params.id) : null;
+    if (demoTournament) {
+      return NextResponse.json(toDemoTournamentApi(demoTournament), {
+        headers: { "X-Coral-Data-Source": "demo" },
+      });
+    }
+
+    return NextResponse.json({ error: "Tournament not found" }, { status: 404 });
   } catch (error) {
+    const demoTournament = DEMO_CONTENT_ENABLED ? getDemoTournament(params.id) : null;
+    if (demoTournament) {
+      console.warn("Tournament API unavailable; using demo data.", error);
+      return NextResponse.json(toDemoTournamentApi(demoTournament), {
+        headers: { "X-Coral-Data-Source": "demo" },
+      });
+    }
+
     console.error("Error fetching tournament:", error);
     return NextResponse.json(
       { error: "Failed to fetch tournament" },
@@ -50,17 +65,14 @@ export async function GET(
   }
 }
 
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PATCH(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Check if user is tournament creator or admin
     const tournament = await prisma.tournament.findUnique({
       where: { id: params.id },
       select: { createdById: true },
@@ -243,17 +255,14 @@ export async function PATCH(
   }
 }
 
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Check if user is tournament creator or admin
     const tournament = await prisma.tournament.findUnique({
       where: { id: params.id },
       select: { createdById: true },

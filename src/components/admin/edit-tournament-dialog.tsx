@@ -42,10 +42,10 @@ interface Tournament {
   playersPerTeam: number;
   maxTeams: number;
   prizePool: string | null;
-  registrationStart: Date | null;
-  registrationEnd: Date | null;
-  startDate: Date;
-  endDate: Date | null;
+  registrationStart: Date | string | null;
+  registrationEnd: Date | string | null;
+  startDate: Date | string;
+  endDate: Date | string | null;
   status: string;
   rules: string | null;
 }
@@ -71,8 +71,12 @@ export function EditTournamentDialog({
     teamMode: tournament.teamMode,
     playersPerTeam: tournament.playersPerTeam.toString(),
     prizePool: tournament.prizePool || "",
-    registrationStart: tournament.registrationStart ? toLocalDatetimeInputValue(new Date(tournament.registrationStart)) : "",
-    registrationEnd: tournament.registrationEnd ? toLocalDatetimeInputValue(new Date(tournament.registrationEnd)) : "",
+    registrationStart: tournament.registrationStart
+      ? toLocalDatetimeInputValue(new Date(tournament.registrationStart))
+      : "",
+    registrationEnd: tournament.registrationEnd
+      ? toLocalDatetimeInputValue(new Date(tournament.registrationEnd))
+      : "",
     startDate: toLocalDatetimeInputValue(new Date(tournament.startDate)),
     endDate: tournament.endDate ? toLocalDatetimeInputValue(new Date(tournament.endDate)) : "",
     status: tournament.status,
@@ -140,9 +144,7 @@ export function EditTournamentDialog({
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle>Modifica Torneo</DialogTitle>
-          <DialogDescription>
-            Modifica i dettagli del torneo
-          </DialogDescription>
+          <DialogDescription>Modifica i dettagli del torneo</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
@@ -162,9 +164,7 @@ export function EditTournamentDialog({
               <Input
                 id="name"
                 value={formData.name}
-                onChange={(e) =>
-                  setFormData({ ...formData, name: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 required
               />
             </div>
@@ -174,36 +174,28 @@ export function EditTournamentDialog({
               <Textarea
                 id="description"
                 value={formData.description}
-                onChange={(e) =>
-                  setFormData({ ...formData, description: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 rows={3}
                 required
               />
             </div>
 
             <div className="grid gap-2">
-                <Label htmlFor="format">Formato *</Label>
-                <Select
-                  value={formData.format}
-                  onValueChange={(value) =>
-                    setFormData({ ...formData, format: value })
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="SINGLE_ELIMINATION">
-                      Eliminazione Singola
-                    </SelectItem>
-                    <SelectItem value="DOUBLE_ELIMINATION">
-                      Doppia Eliminazione
-                    </SelectItem>
-                    <SelectItem value="ROUND_ROBIN">Round Robin</SelectItem>
-                    <SelectItem value="SWISS">Swiss</SelectItem>
-                  </SelectContent>
-                </Select>
+              <Label htmlFor="format">Formato *</Label>
+              <Select
+                value={formData.format}
+                onValueChange={(value) => setFormData({ ...formData, format: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="SINGLE_ELIMINATION">Eliminazione Singola</SelectItem>
+                  <SelectItem value="DOUBLE_ELIMINATION">Doppia Eliminazione</SelectItem>
+                  <SelectItem value="ROUND_ROBIN">Round Robin</SelectItem>
+                  <SelectItem value="SWISS">Swiss</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
@@ -212,9 +204,7 @@ export function EditTournamentDialog({
                 <Input
                   id="prizePool"
                   value={formData.prizePool}
-                  onChange={(e) =>
-                    setFormData({ ...formData, prizePool: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, prizePool: e.target.value })}
                   placeholder="es. €1000"
                 />
               </div>
@@ -242,12 +232,7 @@ export function EditTournamentDialog({
 
             <div className="grid gap-2">
               <Label htmlFor="playersPerTeam">Player per Team *</Label>
-              <Input
-                id="playersPerTeam"
-                type="number"
-                value={formData.playersPerTeam}
-                readOnly
-              />
+              <Input id="playersPerTeam" type="number" value={formData.playersPerTeam} readOnly />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
@@ -257,9 +242,7 @@ export function EditTournamentDialog({
                   id="registrationStart"
                   type="datetime-local"
                   value={formData.registrationStart}
-                  onChange={(e) =>
-                    setFormData({ ...formData, registrationStart: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, registrationStart: e.target.value })}
                 />
               </div>
 
@@ -269,9 +252,7 @@ export function EditTournamentDialog({
                   id="registrationEnd"
                   type="datetime-local"
                   value={formData.registrationEnd}
-                  onChange={(e) =>
-                    setFormData({ ...formData, registrationEnd: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, registrationEnd: e.target.value })}
                 />
               </div>
             </div>
@@ -315,18 +296,14 @@ export function EditTournamentDialog({
               <Label htmlFor="status">Stato *</Label>
               <Select
                 value={formData.status}
-                onValueChange={(value) =>
-                  setFormData({ ...formData, status: value })
-                }
+                onValueChange={(value) => setFormData({ ...formData, status: value })}
               >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="DRAFT">Bozza</SelectItem>
-                  <SelectItem value="REGISTRATION_OPEN">
-                    Registrazioni Aperte
-                  </SelectItem>
+                  <SelectItem value="REGISTRATION_OPEN">Registrazioni Aperte</SelectItem>
                   <SelectItem value="UPCOMING">In Arrivo</SelectItem>
                   <SelectItem value="LIVE">Live</SelectItem>
                   <SelectItem value="FINISHED">Concluso</SelectItem>
@@ -334,7 +311,6 @@ export function EditTournamentDialog({
                 </SelectContent>
               </Select>
             </div>
-
           </div>
 
           <DialogFooter>

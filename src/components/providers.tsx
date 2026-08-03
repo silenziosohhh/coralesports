@@ -1,24 +1,23 @@
 "use client";
 
 import { SessionProvider } from "next-auth/react";
-import { ThemeProvider } from "next-themes";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MotionConfig } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { I18nProvider } from "@/lib/i18n";
+import { CookieConsentProvider } from "@/lib/cookie-consent";
 
 export function Providers({ children }: { children: React.ReactNode }) {
-  const [queryClient] = useState(() => new QueryClient());
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => setHydrated(true), []);
 
   return (
     <SessionProvider>
-      <QueryClientProvider client={queryClient}>
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
-          <I18nProvider>
-            <MotionConfig reducedMotion="user">{children}</MotionConfig>
-          </I18nProvider>
-        </ThemeProvider>
-      </QueryClientProvider>
+      <I18nProvider>
+        <CookieConsentProvider>
+          <MotionConfig reducedMotion={hydrated ? "user" : "never"}>{children}</MotionConfig>
+        </CookieConsentProvider>
+      </I18nProvider>
     </SessionProvider>
   );
 }

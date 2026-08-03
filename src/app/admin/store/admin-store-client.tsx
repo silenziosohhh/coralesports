@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -40,7 +41,7 @@ type Order = {
   totalCents: number;
   currency: string;
   status: string;
-  createdAt: Date;
+  createdAt: string;
   user: { name: string | null; discordTag: string | null } | null;
   items: {
     quantity: number;
@@ -71,15 +72,16 @@ export function AdminStoreClient({
   stats: Stats;
 }) {
   return (
-    <div className="min-h-screen bg-[var(--bg-primary)] py-12">
-      <div className="container mx-auto px-4">
-        {/* Header */}
+    <main className="admin-page-shell min-h-screen px-4 pb-32 pt-28 sm:pt-32">
+      <div className="admin-page-content mx-auto w-full max-w-7xl">
         <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-4xl font-black tracking-tight text-white">
               Gestionale <span className="text-[var(--color-accent)]">Store</span>
             </h1>
-            <p className="mt-2 text-white/60">Gestisci categorie, prodotti e ordini del tuo store.</p>
+            <p className="mt-2 text-white/60">
+              Gestisci categorie, prodotti e ordini del tuo store.
+            </p>
           </div>
           <div className="flex gap-3">
             <Button variant="outline" asChild>
@@ -94,7 +96,6 @@ export function AdminStoreClient({
           </div>
         </div>
 
-        {/* Statistics Cards */}
         <div className="mb-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           <Card className="glass-card border-cyan/20">
             <CardContent className="p-6">
@@ -123,7 +124,7 @@ export function AdminStoreClient({
                   <p className="mt-2 text-3xl font-black text-white">{stats.totalOrders}</p>
                   <p className="mt-1 text-xs text-white/50">{stats.recentOrders} ultimi 30gg</p>
                 </div>
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--color-accent)]/15">
+                <div className="bg-[var(--color-accent)]/15 flex h-12 w-12 items-center justify-center rounded-xl">
                   <ShoppingCart className="h-6 w-6 text-[var(--color-accent)]" />
                 </div>
               </div>
@@ -140,7 +141,7 @@ export function AdminStoreClient({
                     {stats.activeProducts} attivi • {stats.featuredProducts} in evidenza
                   </p>
                 </div>
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--color-secondary)]/15">
+                <div className="bg-[var(--color-secondary)]/15 flex h-12 w-12 items-center justify-center rounded-xl">
                   <Package className="h-6 w-6 text-[var(--color-secondary)]" />
                 </div>
               </div>
@@ -163,7 +164,6 @@ export function AdminStoreClient({
           </Card>
         </div>
 
-        {/* Quick Actions */}
         <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <CreateProductDialog categories={categories} />
           <CreateCategoryDialog />
@@ -176,9 +176,7 @@ export function AdminStoreClient({
           </Button>
         </div>
 
-        {/* Main Content Grid */}
         <div className="grid gap-6 lg:grid-cols-2">
-          {/* Categories */}
           <Card className="glass-card border-cyan/20">
             <CardHeader className="flex flex-row items-center justify-between gap-3">
               <div className="flex items-center gap-2">
@@ -219,7 +217,6 @@ export function AdminStoreClient({
             </CardContent>
           </Card>
 
-          {/* Recent Orders */}
           <Card className="glass-card border-cyan/20">
             <CardHeader className="flex flex-row items-center justify-between gap-3">
               <div className="flex items-center gap-2">
@@ -255,8 +252,8 @@ export function AdminStoreClient({
                             o.status === "PAID"
                               ? "bg-emerald-500/15 text-emerald-200"
                               : o.status === "PENDING"
-                              ? "bg-amber-500/15 text-amber-200"
-                              : "bg-white/10 text-white"
+                                ? "bg-amber-500/15 text-amber-200"
+                                : "bg-white/10 text-white"
                           }
                         >
                           {o.status}
@@ -273,7 +270,6 @@ export function AdminStoreClient({
           </Card>
         </div>
 
-        {/* Products List */}
         <Card className="glass-card border-cyan/20 mt-6">
           <CardHeader className="flex flex-row items-center justify-between gap-3">
             <div className="flex items-center gap-2">
@@ -297,13 +293,22 @@ export function AdminStoreClient({
                     <div className="flex items-center gap-3">
                       {p.imageUrl && (
                         <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg border border-white/10">
-                          <img src={p.imageUrl} alt={p.name} className="h-full w-full object-cover" />
+                          <Image
+                            src={p.imageUrl}
+                            alt={p.name}
+                            fill
+                            unoptimized
+                            sizes="48px"
+                            className="object-cover"
+                          />
                         </div>
                       )}
                       <div>
                         <div className="flex flex-wrap items-center gap-2">
                           <div className="font-semibold text-white">{p.name}</div>
-                          {p.isFeatured && <Badge className="bg-cyan/15 text-cyan">⭐ FEATURED</Badge>}
+                          {p.isFeatured && (
+                            <Badge className="bg-cyan/15 text-cyan">⭐ FEATURED</Badge>
+                          )}
                           {p.isActive ? (
                             <Badge className="bg-emerald-500/15 text-emerald-200">ATTIVO</Badge>
                           ) : (
@@ -331,6 +336,6 @@ export function AdminStoreClient({
           </CardContent>
         </Card>
       </div>
-    </div>
+    </main>
   );
 }

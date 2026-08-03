@@ -49,7 +49,6 @@ export function TurnstileWidget({
       try {
         if (widgetIdRef.current) window.turnstile?.reset(widgetIdRef.current);
       } catch {
-        // ignore
       }
       widgetIdRef.current = null;
     };

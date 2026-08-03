@@ -1,29 +1,27 @@
-# Base image
+
 FROM node:18-alpine AS base
 
-# Install dependencies only when needed
+
 FROM base AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-# Copy package files
+
 COPY package.json package-lock.json* ./
 RUN npm ci --legacy-peer-deps
 
-# Rebuild the source code only when needed
+
 FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Generate Prisma Client
+
 RUN npx prisma generate
 
-# Build Next.js
 ENV NEXT_TELEMETRY_DISABLED 1
 RUN npm run build
 
-# Production image
 FROM base AS runner
 WORKDIR /app
 

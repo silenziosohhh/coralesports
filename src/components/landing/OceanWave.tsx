@@ -2,11 +2,6 @@
 
 import { cn } from "@/lib/utils";
 
-/**
- * OceanWave – animated CSS wave divider.
- * Replaces the static linear-gradient fade at the bottom of the hero section.
- * The wave fill colour matches --bg-primary (hsl 216 100% 6.3% ≈ #000d20).
- */
 export function OceanWave({ className }: { className?: string }) {
   return (
     <div

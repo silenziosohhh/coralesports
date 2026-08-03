@@ -57,8 +57,7 @@ export function EditSettingDialog({
 
       toast.success("Impostazione aggiornata con successo!");
       setOpen(false);
-      
-      // Refresh the page to show updated values
+
       if (onUpdate) {
         onUpdate();
       } else {
@@ -79,7 +78,7 @@ export function EditSettingDialog({
           Modifica
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px] glass-card border-cyan/20">
+      <DialogContent className="sm:max-w-[425px]">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
             <DialogTitle className="text-white">{settingLabel}</DialogTitle>
@@ -97,7 +96,7 @@ export function EditSettingDialog({
                   id="value"
                   value={value}
                   onChange={(e) => setValue(e.target.value)}
-                  className="flex h-10 w-full rounded-md border border-cyan/20 bg-slate-dark px-3 py-2 text-sm text-white ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan focus-visible:ring-offset-2"
+                  className="border-cyan/20 flex h-10 w-full rounded-md border bg-slate-dark px-3 py-2 text-sm text-white ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan focus-visible:ring-offset-2"
                 >
                   <option value="true">Attivo</option>
                   <option value="false">Disattivo</option>

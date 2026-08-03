@@ -3,10 +3,8 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-export async function POST(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function POST(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
@@ -17,7 +15,6 @@ export async function POST(
     const body = await req.json();
     const { email, discordId } = body;
 
-    // Verifica che l'utente sia il capitano del team
     const teamMember = await prisma.teamMember.findFirst({
       where: {
         teamId,
@@ -33,13 +30,12 @@ export async function POST(
       );
     }
 
-    // Crea l'invito
     const invitation = await prisma.teamInvitation.create({
       data: {
         teamId,
         email,
         discordId,
-        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 giorni
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), 
       },
       include: {
         team: {
@@ -51,7 +47,6 @@ export async function POST(
       },
     });
 
-    // TODO: Invia notifica/email all'utente invitato
 
     return NextResponse.json(invitation, { status: 201 });
   } catch (error) {
@@ -63,10 +58,8 @@ export async function POST(
   }
 }
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
@@ -75,7 +68,6 @@ export async function GET(
 
     const teamId = params.id;
 
-    // Verifica che l'utente sia membro del team
     const teamMember = await prisma.teamMember.findFirst({
       where: {
         teamId,

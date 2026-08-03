@@ -45,7 +45,6 @@ export default function StorePageClient({ categories, products }: { categories: 
       ? products.filter((p) => p.categorySlug === activeCategory)
       : products;
 
-    // Sort products
     switch (sortBy) {
       case "featured":
         result = [...result].sort((a, b) => {
@@ -61,7 +60,6 @@ export default function StorePageClient({ categories, products }: { categories: 
         result = [...result].sort((a, b) => b.priceCents - a.priceCents);
         break;
       case "newest":
-        // Already sorted by newest in the query
         break;
     }
 

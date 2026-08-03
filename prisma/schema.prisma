@@ -96,6 +96,8 @@ model User {
   shopOrders    ShopOrder[]
   tournamentInvitesSent TournamentTeamInvite[] @relation("TournamentInviteSender")
   tournamentInvitesReceived TournamentTeamInvite[] @relation("TournamentInviteRecipient")
+  teamInvitesReceived TeamInvitation[]   @relation("TeamInviteRecipient")
+  teamJoinRequests    TeamJoinRequest[]
 
   @@index([discordId])
   @@index([role])
@@ -125,6 +127,7 @@ model Team {
   createdBy       User               @relation("TeamCreator", fields: [createdById], references: [id])
   members         TeamMember[]
   invitations     TeamInvitation[]
+  joinRequests    TeamJoinRequest[]
   tournamentTeams TournamentTeam[]
   matches         Match[]            @relation("TeamMatches")
 
@@ -167,15 +170,40 @@ model TeamInvitation {
   token     String           @unique @default(cuid())
   email     String?
   discordId String?
+  // Invito nominale: quando valorizzato l'invito è indirizzato a un utente
+  // specifico e compare tra le sue notifiche/inviti in sospeso.
+  userId    String?
   status    InvitationStatus @default(PENDING)
   expiresAt DateTime
   createdAt DateTime         @default(now())
   usedAt    DateTime?
 
-  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  team Team  @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user User? @relation("TeamInviteRecipient", fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([teamId])
   @@index([token])
+  @@index([status])
+  @@index([userId])
+}
+
+// Richiesta di ingresso: il percorso inverso dell'invito, parte dal giocatore
+// e va approvata da un capitano.
+model TeamJoinRequest {
+  id         String           @id @default(cuid())
+  teamId     String
+  userId     String
+  message    String?          @db.Text
+  status     InvitationStatus @default(PENDING)
+  createdAt  DateTime         @default(now())
+  resolvedAt DateTime?
+
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([teamId, userId])
+  @@index([teamId])
+  @@index([userId])
   @@index([status])
 }
 

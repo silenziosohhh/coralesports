@@ -1,0 +1,526 @@
+{
+  "profile": {
+    "id": "demo-user-mrjak3s",
+    "name": "MrJak3s",
+    "discordTag": "mrjak3s",
+    "minecraftUsername": "MrJak3s",
+    "image": "https://avyra-skin-api.vercel.app/api/avatar/MrJak3s?size=512",
+    "role": "PLAYER",
+    "status": "ACTIVE",
+    "elo": 2184,
+    "wins": 47,
+    "losses": 8,
+    "rank": 1,
+    "team": {
+      "id": "demo-team-coral",
+      "name": "Coral Kings",
+      "tag": "CRL",
+      "role": "CAPTAIN"
+    },
+    "recentActivity": [
+      {
+        "id": "activity-1",
+        "title": "Vittoria contro Abyss",
+        "description": "Coral Kings 3–1 Abyss",
+        "date": "27 luglio 2026",
+        "type": "WIN"
+      },
+      {
+        "id": "activity-2",
+        "title": "MVP della giornata",
+        "description": "+42 ELO nella Coral Summer Cup",
+        "date": "25 luglio 2026",
+        "type": "MVP"
+      },
+      {
+        "id": "activity-3",
+        "title": "Serie positiva",
+        "description": "9 vittorie consecutive",
+        "date": "22 luglio 2026",
+        "type": "STREAK"
+      }
+    ],
+    "achievements": [
+      {
+        "id": "achievement-1",
+        "name": "Campione Coral",
+        "description": "Raggiungi il primo posto in classifica"
+      },
+      {
+        "id": "achievement-2",
+        "name": "Hot Streak",
+        "description": "Vinci 5 incontri consecutivi"
+      },
+      {
+        "id": "achievement-3",
+        "name": "Team Leader",
+        "description": "Guida un team in un torneo ufficiale"
+      }
+    ]
+  },
+  "tournaments": [
+    {
+      "id": "demo-coral-summer-cup",
+      "slug": "coral-summer-cup-2026",
+      "name": "Coral Summer Cup 2026",
+      "description": "Il torneo estivo ufficiale CoralMC: bracket competitivo, team DUO e premi per i migliori giocatori.",
+      "banner": "/default_tournament_banner.jpeg",
+      "status": "LIVE",
+      "startDate": "2026-07-24T19:30:00.000Z",
+      "endDate": "2026-08-02T21:30:00.000Z",
+      "registrationStart": "2026-07-01T12:00:00.000Z",
+      "registrationEnd": "2026-07-22T22:00:00.000Z",
+      "maxTeams": 16,
+      "prizePool": "1500",
+      "format": "SINGLE_ELIMINATION",
+      "teamMode": "DUO",
+      "playersPerTeam": 2,
+      "rules": "Versione 1.20.4\nBest of 3 fino alle semifinali\nFinale Best of 5\nÈ obbligatorio presentarsi 15 minuti prima del match",
+      "createdAt": "2026-06-20T10:00:00.000Z",
+      "teamIds": [
+        "demo-team-coral",
+        "demo-team-abyss",
+        "demo-team-void",
+        "demo-team-frost",
+        "demo-team-nova",
+        "demo-team-night"
+      ]
+    },
+    {
+      "id": "demo-coral-ranked-series",
+      "slug": "coral-ranked-series",
+      "name": "Coral Ranked Series",
+      "description": "Una nuova stagione TRIO dedicata ai team che vogliono scalare la classifica ELO.",
+      "banner": "/premi-reali.png",
+      "status": "UPCOMING",
+      "startDate": "2026-08-16T18:00:00.000Z",
+      "endDate": "2026-08-30T22:00:00.000Z",
+      "registrationStart": "2026-07-30T12:00:00.000Z",
+      "registrationEnd": "2026-08-14T22:00:00.000Z",
+      "maxTeams": 24,
+      "prizePool": "750",
+      "format": "DOUBLE_ELIMINATION",
+      "teamMode": "TRIO",
+      "playersPerTeam": 3,
+      "rules": "Versione 1.20.4\nDouble elimination\nCheck-in obbligatorio\nFair play e rispetto dello staff",
+      "createdAt": "2026-07-10T10:00:00.000Z",
+      "teamIds": ["demo-team-coral", "demo-team-abyss", "demo-team-nova", "demo-team-night"]
+    },
+    {
+      "id": "demo-bedwars-finals",
+      "slug": "bedwars-finals-2026",
+      "name": "BedWars Finals",
+      "description": "La finale SOLO che ha chiuso la stagione primaverile di CoralMC.",
+      "banner": "/gestione-team.png",
+      "status": "FINISHED",
+      "startDate": "2026-05-18T18:30:00.000Z",
+      "endDate": "2026-05-18T22:30:00.000Z",
+      "registrationStart": "2026-05-01T12:00:00.000Z",
+      "registrationEnd": "2026-05-16T22:00:00.000Z",
+      "maxTeams": 32,
+      "prizePool": "500",
+      "format": "SINGLE_ELIMINATION",
+      "teamMode": "SOLO",
+      "playersPerTeam": 1,
+      "rules": "Versione 1.20.4\nEliminazione diretta\nFinale Best of 5",
+      "createdAt": "2026-04-20T10:00:00.000Z",
+      "teamIds": ["demo-team-coral", "demo-team-abyss", "demo-team-void", "demo-team-frost"]
+    }
+  ],
+  "teams": [
+    {
+      "id": "demo-team-coral",
+      "name": "Coral Kings",
+      "tag": "CRL",
+      "description": "Il team capolista della Coral League.",
+      "logo": null,
+      "createdById": "demo-user-mrjak3s",
+      "createdAt": "2026-01-18T12:00:00.000Z",
+      "elo": 2240,
+      "members": [
+        {
+          "id": "member-coral-1",
+          "role": "CAPTAIN",
+          "user": {
+            "id": "demo-user-mrjak3s",
+            "name": "MrJak3s",
+            "minecraftUsername": "MrJak3s",
+            "discordTag": "mrjak3s",
+            "image": "https://avyra-skin-api.vercel.app/api/avatar/MrJak3s?size=256",
+            "elo": 2184
+          }
+        },
+        {
+          "id": "member-coral-2",
+          "role": "MEMBER",
+          "user": {
+            "id": "demo-user-zenth",
+            "name": "Zenth",
+            "minecraftUsername": "Zenth",
+            "discordTag": "zenth",
+            "image": "https://avyra-skin-api.vercel.app/api/avatar/Zenth?size=256",
+            "elo": 2021
+          }
+        }
+      ]
+    },
+    {
+      "id": "demo-team-abyss",
+      "name": "Abyss",
+      "tag": "ABS",
+      "description": "Strategia, pressione e controllo della mappa.",
+      "logo": null,
+      "createdById": "demo-user-nexor",
+      "createdAt": "2026-02-03T12:00:00.000Z",
+      "elo": 2188,
+      "members": [
+        {
+          "id": "member-abyss-1",
+          "role": "CAPTAIN",
+          "user": {
+            "id": "demo-user-nexor",
+            "name": "deste5",
+            "minecraftUsername": "deste5",
+            "discordTag": "deste5",
+            "image": "https://avyra-skin-api.vercel.app/api/avatar/deste5?size=256",
+            "elo": 2132
+          }
+        },
+        {
+          "id": "member-abyss-2",
+          "role": "MEMBER",
+          "user": {
+            "id": "demo-user-vortex",
+            "name": "Vortex",
+            "minecraftUsername": "Vortex",
+            "discordTag": "vortex",
+            "image": "https://avyra-skin-api.vercel.app/api/avatar/Vortex?size=256",
+            "elo": 1894
+          }
+        }
+      ]
+    },
+    {
+      "id": "demo-team-void",
+      "name": "Voidwalkers",
+      "tag": "VOID",
+      "description": "Movimento rapido e giocate imprevedibili.",
+      "logo": null,
+      "createdById": "demo-user-silenziosoh",
+      "createdAt": "2026-02-14T12:00:00.000Z",
+      "elo": 2146,
+      "members": [
+        {
+          "id": "member-void-1",
+          "role": "CAPTAIN",
+          "user": {
+            "id": "demo-user-silenziosoh",
+            "name": "Silenziosoh",
+            "minecraftUsername": "Silenziosoh",
+            "discordTag": "silenziosoh",
+            "image": "https://avyra-skin-api.vercel.app/api/avatar/Silenziosoh?size=256",
+            "elo": 2098
+          }
+        },
+        {
+          "id": "member-void-2",
+          "role": "MEMBER",
+          "user": {
+            "id": "demo-user-eclipse",
+            "name": "EclipseMC",
+            "minecraftUsername": "EclipseMC",
+            "discordTag": "eclipsemc",
+            "image": "https://avyra-skin-api.vercel.app/api/avatar/EclipseMC?size=256",
+            "elo": 1930
+          }
+        }
+      ]
+    },
+    {
+      "id": "demo-team-frost",
+      "name": "Frostbyte",
+      "tag": "FRST",
+      "description": "Un roster tecnico costruito per i match lunghi.",
+      "logo": null,
+      "createdById": "demo-user-kyrox",
+      "createdAt": "2026-03-01T12:00:00.000Z",
+      "elo": 2091,
+      "members": [
+        {
+          "id": "member-frost-1",
+          "role": "CAPTAIN",
+          "user": {
+            "id": "demo-user-kyrox",
+            "name": "KyroX",
+            "minecraftUsername": "KyroX",
+            "discordTag": "kyrox",
+            "image": "https://avyra-skin-api.vercel.app/api/avatar/KyroX?size=256",
+            "elo": 2056
+          }
+        },
+        {
+          "id": "member-frost-2",
+          "role": "MEMBER",
+          "user": {
+            "id": "demo-user-lynx",
+            "name": "LynxPvP",
+            "minecraftUsername": "LynxPvP",
+            "discordTag": "lynxpvp",
+            "image": "https://avyra-skin-api.vercel.app/api/avatar/LynxPvP?size=256",
+            "elo": 1926
+          }
+        }
+      ]
+    },
+    {
+      "id": "demo-team-nova",
+      "name": "Nova Core",
+      "tag": "NOVA",
+      "description": "Talento emergente della scena competitiva.",
+      "logo": null,
+      "createdById": "demo-user-astra",
+      "createdAt": "2026-03-17T12:00:00.000Z",
+      "elo": 2044,
+      "members": [
+        {
+          "id": "member-nova-1",
+          "role": "CAPTAIN",
+          "user": {
+            "id": "demo-user-astra",
+            "name": "AstraV2",
+            "minecraftUsername": "AstraV2",
+            "discordTag": "astrav2",
+            "image": "https://avyra-skin-api.vercel.app/api/avatar/AstraV2?size=256",
+            "elo": 1987
+          }
+        },
+        {
+          "id": "member-nova-2",
+          "role": "MEMBER",
+          "user": {
+            "id": "demo-user-stryke",
+            "name": "Stryke",
+            "minecraftUsername": "Stryke",
+            "discordTag": "stryke",
+            "image": "https://avyra-skin-api.vercel.app/api/avatar/Stryke?size=256",
+            "elo": 1831
+          }
+        }
+      ]
+    },
+    {
+      "id": "demo-team-night",
+      "name": "Nightfall",
+      "tag": "NGT",
+      "description": "Esperienza e disciplina in ogni bracket.",
+      "logo": null,
+      "createdById": "demo-user-raven",
+      "createdAt": "2026-04-02T12:00:00.000Z",
+      "elo": 1996,
+      "members": [
+        {
+          "id": "member-night-1",
+          "role": "CAPTAIN",
+          "user": {
+            "id": "demo-user-raven",
+            "name": "RavenMC",
+            "minecraftUsername": "RavenMC",
+            "discordTag": "ravenmc",
+            "image": "https://avyra-skin-api.vercel.app/api/avatar/RavenMC?size=256",
+            "elo": 1954
+          }
+        },
+        {
+          "id": "member-night-2",
+          "role": "MEMBER",
+          "user": {
+            "id": "demo-user-echo",
+            "name": "EchoRush",
+            "minecraftUsername": "EchoRush",
+            "discordTag": "echorush",
+            "image": "https://avyra-skin-api.vercel.app/api/avatar/EchoRush?size=256",
+            "elo": 1798
+          }
+        }
+      ]
+    }
+  ],
+  "tournamentEntries": [
+    {
+      "id": "entry-coral",
+      "tournamentId": "demo-coral-summer-cup",
+      "teamId": "demo-team-coral",
+      "status": "REGISTERED",
+      "seed": 1,
+      "registeredAt": "2026-07-02T12:00:00.000Z"
+    },
+    {
+      "id": "entry-abyss",
+      "tournamentId": "demo-coral-summer-cup",
+      "teamId": "demo-team-abyss",
+      "status": "REGISTERED",
+      "seed": 2,
+      "registeredAt": "2026-07-03T12:00:00.000Z"
+    },
+    {
+      "id": "entry-void",
+      "tournamentId": "demo-coral-summer-cup",
+      "teamId": "demo-team-void",
+      "status": "REGISTERED",
+      "seed": 3,
+      "registeredAt": "2026-07-04T12:00:00.000Z"
+    },
+    {
+      "id": "entry-frost",
+      "tournamentId": "demo-coral-summer-cup",
+      "teamId": "demo-team-frost",
+      "status": "REGISTERED",
+      "seed": 4,
+      "registeredAt": "2026-07-05T12:00:00.000Z"
+    },
+    {
+      "id": "entry-nova",
+      "tournamentId": "demo-coral-summer-cup",
+      "teamId": "demo-team-nova",
+      "status": "PENDING",
+      "seed": 5,
+      "registeredAt": "2026-07-06T12:00:00.000Z"
+    },
+    {
+      "id": "entry-night",
+      "tournamentId": "demo-coral-summer-cup",
+      "teamId": "demo-team-night",
+      "status": "PENDING",
+      "seed": 6,
+      "registeredAt": "2026-07-07T12:00:00.000Z"
+    }
+  ],
+  "teamLeaderboard": [
+    {
+      "teamId": "demo-team-coral",
+      "teamName": "Coral Kings",
+      "teamTag": "CRL",
+      "teamLogo": null,
+      "teamElo": 2240,
+      "seed": 1,
+      "played": 12,
+      "wins": 10,
+      "losses": 2,
+      "draws": 0,
+      "points": 30,
+      "scoreFor": 34,
+      "scoreAgainst": 12,
+      "scoreDiff": 22
+    },
+    {
+      "teamId": "demo-team-abyss",
+      "teamName": "Abyss",
+      "teamTag": "ABS",
+      "teamLogo": null,
+      "teamElo": 2188,
+      "seed": 2,
+      "played": 12,
+      "wins": 9,
+      "losses": 3,
+      "draws": 0,
+      "points": 27,
+      "scoreFor": 31,
+      "scoreAgainst": 16,
+      "scoreDiff": 15
+    },
+    {
+      "teamId": "demo-team-void",
+      "teamName": "Voidwalkers",
+      "teamTag": "VOID",
+      "teamLogo": null,
+      "teamElo": 2146,
+      "seed": 3,
+      "played": 12,
+      "wins": 8,
+      "losses": 4,
+      "draws": 0,
+      "points": 24,
+      "scoreFor": 28,
+      "scoreAgainst": 17,
+      "scoreDiff": 11
+    },
+    {
+      "teamId": "demo-team-frost",
+      "teamName": "Frostbyte",
+      "teamTag": "FRST",
+      "teamLogo": null,
+      "teamElo": 2091,
+      "seed": 4,
+      "played": 12,
+      "wins": 7,
+      "losses": 5,
+      "draws": 0,
+      "points": 21,
+      "scoreFor": 24,
+      "scoreAgainst": 20,
+      "scoreDiff": 4
+    }
+  ],
+  "playerLeaderboard": [
+    {
+      "id": "demo-user-mrjak3s",
+      "image": "https://avyra-skin-api.vercel.app/api/avatar/MrJak3s?size=256",
+      "discordTag": "mrjak3s",
+      "minecraftUsername": "MrJak3s",
+      "name": "MrJak3s",
+      "elo": 2184,
+      "wins": 47,
+      "losses": 8
+    },
+    {
+      "id": "demo-user-nexor",
+      "image": "https://avyra-skin-api.vercel.app/api/avatar/deste5?size=256",
+      "discordTag": "deste5",
+      "minecraftUsername": "deste5",
+      "name": "deste5",
+      "elo": 2132,
+      "wins": 44,
+      "losses": 10
+    },
+    {
+      "id": "demo-user-silenziosoh",
+      "image": "https://avyra-skin-api.vercel.app/api/avatar/Silenziosoh?size=256",
+      "discordTag": "silenziosoh",
+      "minecraftUsername": "Silenziosoh",
+      "name": "Silenziosoh",
+      "elo": 2098,
+      "wins": 42,
+      "losses": 11
+    },
+    {
+      "id": "demo-user-kyrox",
+      "image": "https://avyra-skin-api.vercel.app/api/avatar/KyroX?size=256",
+      "discordTag": "kyrox",
+      "minecraftUsername": "KyroX",
+      "name": "KyroX",
+      "elo": 2056,
+      "wins": 39,
+      "losses": 12
+    },
+    {
+      "id": "demo-user-zenth",
+      "image": "https://avyra-skin-api.vercel.app/api/avatar/Zenth?size=256",
+      "discordTag": "zenth",
+      "minecraftUsername": "Zenth",
+      "name": "Zenth",
+      "elo": 2021,
+      "wins": 37,
+      "losses": 13
+    },
+    {
+      "id": "demo-user-astra",
+      "image": "https://avyra-skin-api.vercel.app/api/avatar/AstraV2?size=256",
+      "discordTag": "astrav2",
+      "minecraftUsername": "AstraV2",
+      "name": "AstraV2",
+      "elo": 1987,
+      "wins": 35,
+      "losses": 14
+    }
+  ]
+}

@@ -6,8 +6,6 @@ export type Clip = {
   author: string | null;
 };
 
-// Finché CLIPS_API_URL non è configurata (es. https://bot.ttcm.it/api/clips)
-// la sezione mostra queste clip segnaposto.
 const placeholderClips: Clip[] = [
   { id: "demo-1", url: "/bg/pvp-background.mp4", author: "Itors" },
   { id: "demo-2", url: "/bg/pvp-background.mp4", author: "endighrd" },
@@ -17,32 +15,39 @@ const placeholderClips: Clip[] = [
   { id: "demo-6", url: "/bg/pvp-background.mp4", author: "Toccamy" },
 ];
 
-/**
- * Normalizza la risposta dell'API esterna: la forma esatta non è ancora nota,
- * quindi accettiamo sia un array che un oggetto con `clips`/`data`, e i nomi
- * di campo più comuni per url e autore.
- */
 function normalize(payload: unknown): Clip[] {
+  const container = isRecord(payload) ? payload : null;
   const list = Array.isArray(payload)
     ? payload
-    : Array.isArray((payload as any)?.clips)
-      ? (payload as any).clips
-      : Array.isArray((payload as any)?.data)
-        ? (payload as any).data
+    : Array.isArray(container?.clips)
+      ? container.clips
+      : Array.isArray(container?.data)
+        ? container.data
         : [];
 
   return list
-    .map((item: any, index: number): Clip | null => {
-      const url = item?.url ?? item?.video ?? item?.videoUrl ?? item?.link ?? null;
-      if (typeof url !== "string" || !url) return null;
+    .map((item: unknown, index: number): Clip | null => {
+      if (!isRecord(item)) return null;
+      const url = firstString(item.url, item.video, item.videoUrl, item.link);
+      if (!url) return null;
 
       return {
-        id: String(item?.id ?? item?.messageId ?? `clip-${index}`),
+        id: String(item.id ?? item.messageId ?? `clip-${index}`),
         url,
-        author: item?.author ?? item?.username ?? item?.user ?? null,
+        author: firstString(item.author, item.username, item.user),
       };
     })
     .filter((clip): clip is Clip => clip !== null);
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+function firstString(...values: unknown[]) {
+  return (
+    values.find((value): value is string => typeof value === "string" && value.length > 0) ?? null
+  );
 }
 
 export const revalidate = 300;

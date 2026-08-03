@@ -1,52 +1,111 @@
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+.competition-type {
+  font-family: "Cabinet Grotesk", "Satoshi", "Avenir Next", "Segoe UI", sans-serif;
+}
+
+.competition-type + footer {
+  margin-top: 0;
+}
+
+.error-experience + footer {
+  margin-top: 0;
+}
+
+.discord-join-shell {
+  background: linear-gradient(115deg, #3b82f6 0%, #397ef0 52%, #2563eb 100%);
+}
+
+.discord-join-dots {
+  pointer-events: none;
+  opacity: 0.48;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.58) 1.5px, transparent 1.6px);
+  background-size: 18px 18px;
+  mix-blend-mode: overlay;
+}
+
+.discord-join-shapes {
+  pointer-events: none;
+}
+
+@keyframes clean-button-sweep {
+  0% {
+    left: 135%;
+    opacity: 0;
+  }
+  18% {
+    opacity: 0.85;
+  }
+  82% {
+    opacity: 0.65;
+  }
+  100% {
+    left: -45%;
+    opacity: 0;
+  }
+}
+
+.clean-button-shine::before {
+  content: "";
+  position: absolute;
+  top: -90%;
+  left: 135%;
+  z-index: 1;
+  width: 13%;
+  height: 280%;
+  pointer-events: none;
+  border-radius: 999px;
+  opacity: 0;
+  transform: rotate(35deg);
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.18) 18%,
+    rgba(255, 255, 255, 0.9) 50%,
+    rgba(255, 255, 255, 0.18) 82%,
+    transparent 100%
+  );
+  filter: blur(0.25px);
+}
+
+.clean-button-shine:hover::before {
+  animation: clean-button-sweep 720ms ease-out forwards !important;
+}
+
+.clean-button-shine-off::before {
+  display: none;
+}
+
 @layer base {
   :root {
-    /* Palette derived from the CoralMC logo */
     --primary: hsl(203 100% 50%);
-    /* #009DFF */
     --color-hsl-secondary: hsl(184 100% 67%);
-    /* #57FFFF */
     --text-hsl-primary: hsl(0 0% 100%);
     --highlight: hsl(212 100% 43%);
-    /* Deep logo blue */
 
-    /* Shadcn/Tailwind tokens (HSL components, no hsl()) */
     --background: 216 100% 6.3%;
-    /* Deep navy from logo contrast */
     --card: 210 72% 10%;
-    /* Card surface */
     --secondary: 210 45% 17%;
-    /* Muted surface */
     --muted: 210 45% 17%;
     --border: 210 45% 17%;
     --muted-foreground: 206 18% 70%;
     --destructive: 0 63% 31%;
 
-    /* Shadcn accent aligned to the logo blues */
     --accent: 210 45% 17%;
 
-    /* Backwards compatibility */
-    /* Map token components to real CSS colors for legacy var(...) usage */
     --bg-primary: hsl(var(--background));
     --bg-secondary: hsl(var(--card));
     --color-primary: var(--primary);
     --color-secondary: var(--color-hsl-secondary);
-    /* Blue-600-ish for hovers/gradients */
     --color-accent: var(--primary);
-    /* Use blue for links/borders/active */
     --color-highlight: var(--highlight);
-    /* Gold only for key CTAs */
     --color-destructive: hsl(var(--destructive));
     --text-primary: var(--text-hsl-primary);
     --text-secondary: hsl(var(--muted-foreground));
     --border-color: hsl(var(--border));
 
-    /* Shadcn UI compatibility */
     --foreground: 0 0% 100%;
     --card-foreground: 0 0% 100%;
     --popover: var(--card);
@@ -59,7 +118,6 @@
     --ring: 203 100% 50%;
     --radius: 0.625rem;
 
-    /* Legacy colors for gradual migration */
     --white-100: #fff;
     --white-300: rgba(31, 41, 61, 0.3);
     --white-400: rgba(31, 41, 61, 0.5);
@@ -79,9 +137,8 @@
     --chart-4: var(--muted-foreground);
     --chart-5: var(--destructive);
 
-    /* Tailwind config tokens */
     --bg-card: color-mix(in srgb, var(--bg-secondary) 82%, black);
-    --discord-blue: #5865F2;
+    --discord-blue: #5865f2;
 
     --gray-100: rgba(255, 255, 255, 0.92);
     --gray-200: rgba(255, 255, 255, 0.74);
@@ -118,7 +175,6 @@
     --red-100: rgba(239, 68, 68, 0.25);
     --red-200: rgba(239, 68, 68, 0.45);
 
-    /* Glare hover (buttons) */
     --gh-angle: -45deg;
     --gh-size: 250%;
     --gh-duration: 650ms;
@@ -132,7 +188,6 @@
   }
 
   .dark {
-    /* Keep dark mode tokens in HSL-component format so Tailwind's hsl(var(--token)) works */
     --background: 216 100% 6.3%;
     --foreground: 0 0% 100%;
     --card: 210 72% 10%;
@@ -154,14 +209,14 @@
   body {
     background: var(--bg-primary);
     color: var(--text-primary);
-    font-feature-settings: "rlig" 1, "calt" 1;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-feature-settings:
+      "rlig" 1,
+      "calt" 1;
+    font-family: "Satoshi", "Avenir Next", "Segoe UI", sans-serif;
     text-rendering: geometricPrecision;
   }
 
-  /* NB: il focus ring globale è definito in fondo al file (*:focus-visible). */
 
-  /* Consistent interaction affordances */
   a,
   button {
     transition:
@@ -180,12 +235,10 @@
     cursor: not-allowed;
   }
 
-  /* Reserve intrinsic space so images never cause layout shift (low CLS) */
   img {
     height: auto;
   }
 
-  /* Branded text selection */
   ::selection {
     background: color-mix(in srgb, hsl(var(--ring)) 45%, transparent);
     color: #fff;
@@ -206,15 +259,18 @@
 @layer utilities {
   .page-title {
     @apply text-white;
+    max-width: 900px;
+    font-family: "Cabinet Grotesk", "Satoshi", "Avenir Next", "Segoe UI", sans-serif;
+    font-weight: 900;
+    letter-spacing: -0.035em;
+    line-height: 0.98;
   }
 
-  /* Text Overflow Utilities */
   .overflow-wrap-anywhere {
     overflow-wrap: anywhere;
     word-break: break-word;
   }
 
-  /* Glassmorphism Effects */
   .glass {
     background-color: var(--white-300);
     backdrop-filter: blur(24px);
@@ -230,16 +286,17 @@
   }
 
   .glass-card {
-    background-color: rgba(31, 41, 55, 0.72);
-    background-color: color-mix(in srgb, var(--darkslategray-200) 72%, transparent);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgb(2, 68, 112);
-    border-radius: 0.75rem;
-    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+    background:
+      linear-gradient(145deg, rgba(8, 38, 76, 0.9), rgba(4, 23, 52, 0.86)), rgba(4, 23, 52, 0.82);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 2px solid rgba(255, 255, 255, 0.14);
+    border-radius: 1.5rem;
+    box-shadow:
+      0 28px 80px rgba(0, 7, 24, 0.38),
+      inset 0 1px 0 rgba(255, 255, 255, 0.06);
   }
 
-  /* Cyan Border Effects */
   .cyan-border {
     border: 1px solid var(--deepskyblue-500);
   }
@@ -253,20 +310,28 @@
   }
 
   .gradient-border::before {
-    content: '';
+    content: "";
     position: absolute;
     inset: 0;
     border-radius: 0.5rem;
     padding: 1px;
-    background: linear-gradient(to right, var(--deepskyblue-100), var(--darkorchid-100), var(--deepskyblue-200));
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    background: linear-gradient(
+      to right,
+      var(--deepskyblue-100),
+      var(--darkorchid-100),
+      var(--deepskyblue-200)
+    );
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
     z-index: -10;
   }
 
-  /* Premium Card Styles */
   .premium-card {
     background-color: rgba(31, 41, 55, 0.72);
     background-color: color-mix(in srgb, var(--darkslategray-200) 72%, transparent);
@@ -285,14 +350,61 @@
   }
 
   .gradient-text {
-    background: linear-gradient(90deg, var(--color-primary), var(--color-secondary), var(--color-accent));
+    background: linear-gradient(
+      90deg,
+      var(--color-primary),
+      var(--color-secondary),
+      var(--color-accent)
+    );
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
   }
 }
 
-/* Custom Scrollbar */
+.admin-page-shell {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 12% 8%, rgba(0, 157, 255, 0.2), transparent 31rem),
+    radial-gradient(circle at 92% 28%, rgba(87, 255, 255, 0.11), transparent 27rem),
+    linear-gradient(180deg, #001834 0%, #000d20 68%, #000914 100%);
+}
+
+.admin-page-shell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  opacity: 0.24;
+  background-image: radial-gradient(rgba(87, 255, 255, 0.56) 1px, transparent 1.2px);
+  background-size: 28px 28px;
+  mask-image: linear-gradient(to bottom, black, transparent 72%);
+}
+
+.admin-page-shell::after {
+  content: "";
+  position: absolute;
+  top: -11rem;
+  right: -9rem;
+  z-index: -1;
+  width: 34rem;
+  height: 34rem;
+  pointer-events: none;
+  border: 1px solid rgba(87, 255, 255, 0.13);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 4rem rgba(0, 157, 255, 0.025),
+    0 0 0 9rem rgba(0, 157, 255, 0.018);
+}
+
+.admin-page-content {
+  position: relative;
+  z-index: 1;
+}
+
 ::-webkit-scrollbar {
   width: 12px;
   height: 12px;
@@ -312,13 +424,11 @@
   background: var(--color-secondary);
 }
 
-/* Selection */
 ::selection {
   background-color: var(--deepskyblue-300);
   color: var(--white-100);
 }
 
-/* Smooth Animations */
 @keyframes shimmer {
   0% {
     background-position: -1000px 0;
@@ -331,10 +441,12 @@
 
 .animate-shimmer {
   animation: shimmer 3s infinite linear;
-  background: linear-gradient(to right,
-      transparent 0%,
-      var(--deepskyblue-800) 50%,
-      transparent 100%);
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    var(--deepskyblue-800) 50%,
+    transparent 100%
+  );
   background-size: 1000px 100%;
 }
 
@@ -369,7 +481,6 @@
 }
 
 @keyframes gradient {
-
   0%,
   100% {
     background-size: 200% 200%;
@@ -402,8 +513,6 @@
   will-change: transform;
 }
 
-/* Nastro trasportatore delle clip: il track contiene due copie della fila,
-   quindi -50% riporta esattamente al punto di partenza (loop senza stacchi). */
 @keyframes clips-conveyor {
   from {
     transform: translateX(0);
@@ -419,7 +528,6 @@
   will-change: transform;
 }
 
-/* Il nastro si ferma sotto al cursore, così si può guardare la clip ingrandita. */
 .clips-conveyor:hover,
 .clips-conveyor--paused {
   animation-play-state: paused;
@@ -433,18 +541,13 @@
   font-display: swap;
 }
 
-/* ─── Minecraft Nametag ──────────────────────────────────────────────────── */
-/* Authentic floating nametag: semi-transparent black bg, pixel shadows,      */
-/* no border, rotated +6° toward bottom-right, generous letter padding.       */
 
 .minecraft-nametag {
   display: inline-flex;
   align-items: center;
   gap: 0.55rem;
-  /* generous horizontal padding: ~2× the character width on each side */
   padding: 0.55rem 2.2rem;
-  background-color: rgba(0, 0, 0, 0.30);
-  /* no border — real MC nametags are just a translucent black slab */
+  background-color: rgba(0, 0, 0, 0.3);
   border: none;
   font-family: "Minecraft", "Courier New", monospace;
   font-size: 26px;
@@ -453,7 +556,6 @@
   -moz-osx-font-smoothing: grayscale;
   image-rendering: pixelated;
   white-space: nowrap;
-  /* tilt toward bottom-right, pivot from left-center; nudge left & down */
   transform: rotate(6deg) translateX(20px) translateY(20px);
   transform-origin: left center;
 }
@@ -468,22 +570,17 @@
   text-shadow: 3px 3px 0 #3f3f00;
 }
 
-/* Focus Styles — `.outline-none` opta fuori (questa regola è fuori dai layer e batte le utility) */
 *:focus-visible:not(.outline-none) {
   outline: 2px solid var(--deepskyblue-100);
   outline-offset: 2px;
 }
 
-/* Smooth Transitions */
 * {
   transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;
 }
 
-/* ─── Ocean Wave Divider ──────────────────────────────────────────────────── */
-/* Fill colour = #000d20 baked directly into the SVG data URI.                */
-/* No filter needed – the colour is pixel-perfect.                            */
 
 .ocean {
   height: 120px;
@@ -491,8 +588,8 @@
 }
 
 .wave {
-  /* SVG path from s3.cdpn.io/85486/wave.svg – fill replaced with #000d20 */
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1600' height='198'%3E%3Cpath fill='%23000d20' fill-rule='evenodd' d='M.005 121C311 121 409.898-.25 811 0c400 0 500 121 789 121v77H0s.005-48 .005-77z' transform='matrix(-1 0 0 1 1600 0)'/%3E%3C/svg%3E") repeat-x;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1600' height='198'%3E%3Cpath fill='%23000d20' fill-rule='evenodd' d='M.005 121C311 121 409.898-.25 811 0c400 0 500 121 789 121v77H0s.005-48 .005-77z' transform='matrix(-1 0 0 1 1600 0)'/%3E%3C/svg%3E")
+    repeat-x;
   position: absolute;
   bottom: 0;
   width: 6400px;
@@ -521,7 +618,6 @@
 }
 
 @keyframes ocean-swell {
-
   0%,
   100% {
     transform: translate3d(0, -25px, 0);
@@ -532,8 +628,22 @@
   }
 }
 
-/* ─── Section wave divider (decorative, tema Coral) ───────────────────────── */
 .section-wave path {
   stroke: url(#section-wave-gradient);
 }
 
+.navbar-scroll-shell {
+  transition-duration: 520ms !important;
+  transition-property:
+    width, max-width, height, margin, padding, border-color, border-radius, background-color,
+    box-shadow, backdrop-filter !important;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.navbar-scroll-item {
+  transition-duration: 420ms !important;
+  transition-property:
+    color, background-color, box-shadow, width, max-width, height, margin, padding, gap, font-size,
+    letter-spacing, transform, opacity !important;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1) !important;
+}

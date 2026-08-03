@@ -2,11 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { DEMO_CONTENT_ENABLED, getDemoTeam, toDemoTeamApi } from "@/lib/demo-content";
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const team = await prisma.team.findUnique({
       where: { id: params.id },
@@ -23,6 +22,7 @@ export async function GET(
                 id: true,
                 name: true,
                 image: true,
+                minecraftUsername: true,
                 discordTag: true,
                 elo: true,
               },
@@ -37,12 +37,25 @@ export async function GET(
       },
     });
 
-    if (!team) {
-      return NextResponse.json({ error: "Team not found" }, { status: 404 });
+    if (team) return NextResponse.json(team, { headers: { "X-Coral-Data-Source": "api" } });
+
+    const demoTeam = DEMO_CONTENT_ENABLED ? getDemoTeam(params.id) : null;
+    if (demoTeam) {
+      return NextResponse.json(toDemoTeamApi(demoTeam), {
+        headers: { "X-Coral-Data-Source": "demo" },
+      });
     }
 
-      return NextResponse.json(team);
+    return NextResponse.json({ error: "Team not found" }, { status: 404 });
   } catch (error) {
+    const demoTeam = DEMO_CONTENT_ENABLED ? getDemoTeam(params.id) : null;
+    if (demoTeam) {
+      console.warn("Team API unavailable; using demo data.", error);
+      return NextResponse.json(toDemoTeamApi(demoTeam), {
+        headers: { "X-Coral-Data-Source": "demo" },
+      });
+    }
+
     console.error("Error fetching team:", error);
     return NextResponse.json(
       { error: "Failed to fetch team" },
@@ -51,17 +64,14 @@ export async function GET(
   }
 }
 
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PATCH(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Check if user is team captain
     const membership = await prisma.teamMember.findFirst({
       where: {
         teamId: params.id,
@@ -112,17 +122,14 @@ export async function PATCH(
   }
 }
 
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Check if user is team captain
     const membership = await prisma.teamMember.findFirst({
       where: {
         teamId: params.id,

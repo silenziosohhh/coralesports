@@ -87,7 +87,7 @@ export function CreateProductDialog({ categories }: { categories: Category[] }) 
           Nuovo Prodotto
         </Button>
       </DialogTrigger>
-      <DialogContent className="glass-card max-h-[90vh] overflow-y-auto sm:max-w-[600px]">
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle>Crea Nuovo Prodotto</DialogTitle>
           <DialogDescription>
@@ -149,7 +149,9 @@ export function CreateProductDialog({ categories }: { categories: Category[] }) 
                   min="0"
                 />
                 <p className="text-xs text-white/60">
-                  {formData.priceCents ? `€${(parseInt(formData.priceCents) / 100).toFixed(2)}` : "€0.00"}
+                  {formData.priceCents
+                    ? `€${(parseInt(formData.priceCents) / 100).toFixed(2)}`
+                    : "€0.00"}
                 </p>
               </div>
 
@@ -204,7 +206,12 @@ export function CreateProductDialog({ categories }: { categories: Category[] }) 
             </div>
           </div>
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setOpen(false)} disabled={loading}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setOpen(false)}
+              disabled={loading}
+            >
               Annulla
             </Button>
             <Button type="submit" disabled={loading}>

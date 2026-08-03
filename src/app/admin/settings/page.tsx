@@ -1,4 +1,3 @@
-
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { authOptions } from "@/lib/auth";
@@ -23,16 +22,14 @@ export default async function AdminSettingsPage() {
     redirect("/dashboard");
   }
 
-  // Fetch settings from database
   const settings = await prisma.platformSettings.findMany();
   const settingsMap = Object.fromEntries(settings.map((s) => [s.key, s.value]));
 
-  // Helper function to get setting value
   const getSetting = (key: string, defaultValue: string = "") => settingsMap[key] || defaultValue;
 
   return (
-    <div className="min-h-screen bg-[var(--bg-primary)] py-12">
-      <div className="container mx-auto px-4">
+    <main className="admin-page-shell min-h-screen px-4 pb-32 pt-28 sm:pt-32">
+      <div className="admin-page-content mx-auto w-full max-w-7xl">
         <div className="mb-8 flex items-center justify-between">
           <div>
             <h1 className="page-title mb-2 text-4xl font-bold">Impostazioni Piattaforma</h1>
@@ -44,7 +41,6 @@ export default async function AdminSettingsPage() {
         </div>
 
         <div className="grid gap-6 lg:grid-cols-2">
-          {/* General Settings */}
           <Card className="glass-card border-cyan/20">
             <CardHeader>
               <div className="flex items-center gap-2">
@@ -54,10 +50,12 @@ export default async function AdminSettingsPage() {
               <CardDescription>Configurazioni base della piattaforma</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-center justify-between rounded-lg border border-cyan/10 bg-slate-dark/50 p-4">
+              <div className="border-cyan/10 bg-slate-dark/50 flex items-center justify-between rounded-lg border p-4">
                 <div>
                   <p className="font-semibold text-white">Nome Piattaforma</p>
-                  <p className="text-sm text-gray">{getSetting("platform_name", "CoralMC Tournaments")}</p>
+                  <p className="text-sm text-gray">
+                    {getSetting("platform_name", "CoralMC Tournaments")}
+                  </p>
                 </div>
                 <EditSettingDialog
                   settingKey="platform_name"
@@ -66,10 +64,12 @@ export default async function AdminSettingsPage() {
                   description="Il nome della piattaforma visualizzato agli utenti"
                 />
               </div>
-              <div className="flex items-center justify-between rounded-lg border border-cyan/10 bg-slate-dark/50 p-4">
+              <div className="border-cyan/10 bg-slate-dark/50 flex items-center justify-between rounded-lg border p-4">
                 <div>
                   <p className="font-semibold text-white">Lingua Predefinita</p>
-                  <p className="text-sm text-gray">{getSetting("platform_language") === "it" ? "Italiano" : "English"}</p>
+                  <p className="text-sm text-gray">
+                    {getSetting("platform_language") === "it" ? "Italiano" : "English"}
+                  </p>
                 </div>
                 <EditSettingDialog
                   settingKey="platform_language"
@@ -78,10 +78,12 @@ export default async function AdminSettingsPage() {
                   description="Lingua predefinita della piattaforma"
                 />
               </div>
-              <div className="flex items-center justify-between rounded-lg border border-cyan/10 bg-slate-dark/50 p-4">
+              <div className="border-cyan/10 bg-slate-dark/50 flex items-center justify-between rounded-lg border p-4">
                 <div>
                   <p className="font-semibold text-white">Fuso Orario</p>
-                  <p className="text-sm text-gray">{getSetting("platform_timezone", "Europe/Rome")} (UTC+2)</p>
+                  <p className="text-sm text-gray">
+                    {getSetting("platform_timezone", "Europe/Rome")} (UTC+2)
+                  </p>
                 </div>
                 <EditSettingDialog
                   settingKey="platform_timezone"
@@ -93,7 +95,6 @@ export default async function AdminSettingsPage() {
             </CardContent>
           </Card>
 
-          {/* Database Settings */}
           <Card className="glass-card border-cyan/20">
             <CardHeader>
               <div className="flex items-center gap-2">
@@ -103,7 +104,7 @@ export default async function AdminSettingsPage() {
               <CardDescription>Gestione e manutenzione database</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-center justify-between rounded-lg border border-cyan/10 bg-slate-dark/50 p-4">
+              <div className="border-cyan/10 bg-slate-dark/50 flex items-center justify-between rounded-lg border p-4">
                 <div>
                   <p className="font-semibold text-white">Backup Automatico</p>
                   <p className="text-sm text-gray">Ogni giorno alle 03:00</p>
@@ -116,24 +117,27 @@ export default async function AdminSettingsPage() {
                   type="boolean"
                 />
               </div>
-              <div className="flex items-center justify-between rounded-lg border border-cyan/10 bg-slate-dark/50 p-4">
+              <div className="border-cyan/10 bg-slate-dark/50 flex items-center justify-between rounded-lg border p-4">
                 <div>
                   <p className="font-semibold text-white">Ultimo Backup</p>
                   <p className="text-sm text-gray">20 Maggio 2026, 03:00</p>
                 </div>
-                <Button variant="outline" size="sm">Visualizza</Button>
+                <Button variant="outline" size="sm">
+                  Visualizza
+                </Button>
               </div>
-              <div className="flex items-center justify-between rounded-lg border border-cyan/10 bg-slate-dark/50 p-4">
+              <div className="border-cyan/10 bg-slate-dark/50 flex items-center justify-between rounded-lg border p-4">
                 <div>
                   <p className="font-semibold text-white">Ottimizzazione DB</p>
                   <p className="text-sm text-gray">Migliora le performance</p>
                 </div>
-                <Button variant="cyan" size="sm">Esegui</Button>
+                <Button variant="cyan" size="sm">
+                  Esegui
+                </Button>
               </div>
             </CardContent>
           </Card>
 
-          {/* Security Settings */}
           <Card className="glass-card border-cyan/20">
             <CardHeader>
               <div className="flex items-center gap-2">
@@ -143,7 +147,7 @@ export default async function AdminSettingsPage() {
               <CardDescription>Impostazioni di sicurezza e autenticazione</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-center justify-between rounded-lg border border-cyan/10 bg-slate-dark/50 p-4">
+              <div className="border-cyan/10 bg-slate-dark/50 flex items-center justify-between rounded-lg border p-4">
                 <div>
                   <p className="font-semibold text-white">Autenticazione Discord</p>
                   <p className="text-sm text-gray">OAuth2 configurato</p>
@@ -156,10 +160,12 @@ export default async function AdminSettingsPage() {
                   type="boolean"
                 />
               </div>
-              <div className="flex items-center justify-between rounded-lg border border-cyan/10 bg-slate-dark/50 p-4">
+              <div className="border-cyan/10 bg-slate-dark/50 flex items-center justify-between rounded-lg border p-4">
                 <div>
                   <p className="font-semibold text-white">Rate Limiting</p>
-                  <p className="text-sm text-gray">{getSetting("rate_limit_requests", "100")} richieste/minuto</p>
+                  <p className="text-sm text-gray">
+                    {getSetting("rate_limit_requests", "100")} richieste/minuto
+                  </p>
                 </div>
                 <EditSettingDialog
                   settingKey="rate_limit_requests"
@@ -169,10 +175,12 @@ export default async function AdminSettingsPage() {
                   type="number"
                 />
               </div>
-              <div className="flex items-center justify-between rounded-lg border border-cyan/10 bg-slate-dark/50 p-4">
+              <div className="border-cyan/10 bg-slate-dark/50 flex items-center justify-between rounded-lg border p-4">
                 <div>
                   <p className="font-semibold text-white">IP Whitelist</p>
-                  <p className="text-sm text-gray">{getSetting("ip_whitelist", "Nessuna restrizione")}</p>
+                  <p className="text-sm text-gray">
+                    {getSetting("ip_whitelist", "Nessuna restrizione")}
+                  </p>
                 </div>
                 <EditSettingDialog
                   settingKey="ip_whitelist"
@@ -184,7 +192,6 @@ export default async function AdminSettingsPage() {
             </CardContent>
           </Card>
 
-          {/* Notification Settings */}
           <Card className="glass-card border-cyan/20">
             <CardHeader>
               <div className="flex items-center gap-2">
@@ -194,7 +201,7 @@ export default async function AdminSettingsPage() {
               <CardDescription>Configurazione sistema notifiche</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-center justify-between rounded-lg border border-cyan/10 bg-slate-dark/50 p-4">
+              <div className="border-cyan/10 bg-slate-dark/50 flex items-center justify-between rounded-lg border p-4">
                 <div>
                   <p className="font-semibold text-white">Notifiche Email</p>
                   <p className="text-sm text-gray">Invio email automatiche</p>
@@ -207,7 +214,7 @@ export default async function AdminSettingsPage() {
                   type="boolean"
                 />
               </div>
-              <div className="flex items-center justify-between rounded-lg border border-cyan/10 bg-slate-dark/50 p-4">
+              <div className="border-cyan/10 bg-slate-dark/50 flex items-center justify-between rounded-lg border p-4">
                 <div>
                   <p className="font-semibold text-white">Notifiche Discord</p>
                   <p className="text-sm text-gray">Webhook configurato</p>
@@ -220,7 +227,7 @@ export default async function AdminSettingsPage() {
                   type="boolean"
                 />
               </div>
-              <div className="flex items-center justify-between rounded-lg border border-cyan/10 bg-slate-dark/50 p-4">
+              <div className="border-cyan/10 bg-slate-dark/50 flex items-center justify-between rounded-lg border p-4">
                 <div>
                   <p className="font-semibold text-white">Notifiche Push</p>
                   <p className="text-sm text-gray">Browser notifications</p>
@@ -236,7 +243,6 @@ export default async function AdminSettingsPage() {
             </CardContent>
           </Card>
 
-          {/* Tournament Settings */}
           <Card className="glass-card border-cyan/20">
             <CardHeader>
               <div className="flex items-center gap-2">
@@ -246,13 +252,15 @@ export default async function AdminSettingsPage() {
               <CardDescription>Configurazioni tornei e competizioni</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-center justify-between rounded-lg border border-cyan/10 bg-slate-dark/50 p-4">
+              <div className="border-cyan/10 bg-slate-dark/50 flex items-center justify-between rounded-lg border p-4">
                 <div>
                   <p className="font-semibold text-white">ELO Iniziale</p>
                   <p className="text-sm text-gray">Punteggio di partenza</p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-white font-semibold">{getSetting("default_elo", "1000")}</span>
+                  <span className="font-semibold text-white">
+                    {getSetting("default_elo", "1000")}
+                  </span>
                   <EditSettingDialog
                     settingKey="default_elo"
                     settingLabel="ELO Iniziale"
@@ -262,13 +270,15 @@ export default async function AdminSettingsPage() {
                   />
                 </div>
               </div>
-              <div className="flex items-center justify-between rounded-lg border border-cyan/10 bg-slate-dark/50 p-4">
+              <div className="border-cyan/10 bg-slate-dark/50 flex items-center justify-between rounded-lg border p-4">
                 <div>
                   <p className="font-semibold text-white">Max Teams per Torneo</p>
                   <p className="text-sm text-gray">Limite massimo</p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-white font-semibold">{getSetting("max_teams_per_tournament", "64")}</span>
+                  <span className="font-semibold text-white">
+                    {getSetting("max_teams_per_tournament", "64")}
+                  </span>
                   <EditSettingDialog
                     settingKey="max_teams_per_tournament"
                     settingLabel="Max Teams per Torneo"
@@ -278,7 +288,7 @@ export default async function AdminSettingsPage() {
                   />
                 </div>
               </div>
-              <div className="flex items-center justify-between rounded-lg border border-cyan/10 bg-slate-dark/50 p-4">
+              <div className="border-cyan/10 bg-slate-dark/50 flex items-center justify-between rounded-lg border p-4">
                 <div>
                   <p className="font-semibold text-white">Registrazione Automatica</p>
                   <p className="text-sm text-gray">Approvazione team</p>
@@ -294,7 +304,6 @@ export default async function AdminSettingsPage() {
             </CardContent>
           </Card>
 
-          {/* API Settings */}
           <Card className="glass-card border-cyan/20">
             <CardHeader>
               <div className="flex items-center gap-2">
@@ -304,7 +313,7 @@ export default async function AdminSettingsPage() {
               <CardDescription>Gestione API e servizi esterni</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-center justify-between rounded-lg border border-cyan/10 bg-slate-dark/50 p-4">
+              <div className="border-cyan/10 bg-slate-dark/50 flex items-center justify-between rounded-lg border p-4">
                 <div>
                   <p className="font-semibold text-white">API Pubblica</p>
                   <p className="text-sm text-gray">Accesso dati pubblici</p>
@@ -317,10 +326,12 @@ export default async function AdminSettingsPage() {
                   type="boolean"
                 />
               </div>
-              <div className="flex items-center justify-between rounded-lg border border-cyan/10 bg-slate-dark/50 p-4">
+              <div className="border-cyan/10 bg-slate-dark/50 flex items-center justify-between rounded-lg border p-4">
                 <div>
                   <p className="font-semibold text-white">Webhook Discord</p>
-                  <p className="text-sm text-gray">{getSetting("discord_webhook_url") ? "Configurato" : "Non configurato"}</p>
+                  <p className="text-sm text-gray">
+                    {getSetting("discord_webhook_url") ? "Configurato" : "Non configurato"}
+                  </p>
                 </div>
                 <EditSettingDialog
                   settingKey="discord_webhook_url"
@@ -329,7 +340,7 @@ export default async function AdminSettingsPage() {
                   description="URL del webhook Discord per eventi e notifiche"
                 />
               </div>
-              <div className="flex items-center justify-between rounded-lg border border-cyan/10 bg-slate-dark/50 p-4">
+              <div className="border-cyan/10 bg-slate-dark/50 flex items-center justify-between rounded-lg border p-4">
                 <div>
                   <p className="font-semibold text-white">API Keys</p>
                   <p className="text-sm text-gray">Chiave di accesso API</p>
@@ -345,8 +356,7 @@ export default async function AdminSettingsPage() {
           </Card>
         </div>
 
-        {/* Danger Zone */}
-        <Card className="glass-card border-red-500/20 mt-8">
+        <Card className="glass-card mt-8 border-red-500/20">
           <CardHeader>
             <div className="flex items-center gap-2">
               <Lock className="h-5 w-5 text-red-500" />
@@ -360,18 +370,22 @@ export default async function AdminSettingsPage() {
                 <p className="font-semibold text-white">Reset Database</p>
                 <p className="text-sm text-gray">Elimina tutti i dati (irreversibile)</p>
               </div>
-              <Button variant="destructive" size="sm">Reset</Button>
+              <Button variant="destructive" size="sm">
+                Reset
+              </Button>
             </div>
             <div className="flex items-center justify-between rounded-lg border border-red-500/20 bg-red-500/5 p-4">
               <div>
                 <p className="font-semibold text-white">Modalità Manutenzione</p>
                 <p className="text-sm text-gray">Disabilita accesso utenti</p>
               </div>
-              <Button variant="outline" size="sm">Attiva</Button>
+              <Button variant="outline" size="sm">
+                Attiva
+              </Button>
             </div>
           </CardContent>
         </Card>
       </div>
-    </div>
+    </main>
   );
 }

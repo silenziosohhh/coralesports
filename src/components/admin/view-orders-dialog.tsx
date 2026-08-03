@@ -19,7 +19,7 @@ type Order = {
   totalCents: number;
   currency: string;
   status: string;
-  createdAt: Date;
+  createdAt: string;
   user: { name: string | null; discordTag: string | null } | null;
   items: {
     quantity: number;
@@ -53,12 +53,10 @@ export function ViewOrdersDialog({ orders }: { orders: Order[] }) {
           Visualizza Ordini ({orders.length})
         </Button>
       </DialogTrigger>
-      <DialogContent className="glass-card max-h-[90vh] overflow-y-auto sm:max-w-[700px]">
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[700px]">
         <DialogHeader>
           <DialogTitle>Tutti gli Ordini</DialogTitle>
-          <DialogDescription>
-            Visualizza e gestisci tutti gli ordini dello shop.
-          </DialogDescription>
+          <DialogDescription>Visualizza e gestisci tutti gli ordini dello shop.</DialogDescription>
         </DialogHeader>
         <div className="space-y-3 py-4">
           {orders.length === 0 ? (
@@ -78,9 +76,7 @@ export function ViewOrdersDialog({ orders }: { orders: Order[] }) {
                       <div className="text-lg font-bold text-white">
                         {formatPrice(order.totalCents, order.currency)}
                       </div>
-                      <Badge className={getStatusColor(order.status)}>
-                        {order.status}
-                      </Badge>
+                      <Badge className={getStatusColor(order.status)}>{order.status}</Badge>
                     </div>
                     <div className="mt-1 text-sm text-white/60">
                       {order.user?.discordTag || order.user?.name || "Guest"} •{" "}

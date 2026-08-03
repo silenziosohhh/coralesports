@@ -78,7 +78,6 @@ export function VictoryPoseScene({ winnerSkinUrl, loserSkinUrl, className }: Vic
       loser.skin.modelType = loserSkin.modelType;
       loser.skin.visible = true;
 
-      // Loser: knocked flat on the ground.
       loser.rotation.z = Math.PI / 2 + 0.12;
       loser.rotation.x = 0.2;
       loser.skin.leftArm.rotation.x = -0.4;
@@ -88,8 +87,6 @@ export function VictoryPoseScene({ winnerSkinUrl, loserSkinUrl, className }: Vic
       loser.skin.head.rotation.x = -0.2;
       loser.position.set(2.2, -15.7, -1.5);
 
-      // Winner: standing over the loser, one foot planted on the fallen body,
-      // sword raised overhead.
       winner.position.set(-1.2, -8.2, 1.5);
       winner.rotation.y = -0.4;
       winner.skin.rightLeg.rotation.x = -1.2;
@@ -102,7 +99,6 @@ export function VictoryPoseScene({ winnerSkinUrl, loserSkinUrl, className }: Vic
       winner.skin.head.rotation.x = 0.3;
       winner.skin.body.rotation.x = 0.08;
 
-      // Sword prop parented to the raised arm so it inherits its rotation.
       const sword = new three.Group();
       const blade = new three.Mesh(
         new three.BoxGeometry(0.8, 11, 0.4),

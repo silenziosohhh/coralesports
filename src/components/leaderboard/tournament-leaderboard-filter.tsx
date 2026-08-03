@@ -26,6 +26,7 @@ export function TournamentLeaderboardFilter({
       selectedTournamentId={selectedTournamentId}
       clearParams={["page"]}
       paramKey="tournament"
+      triggerClassName="h-11 rounded-lg border border-white/15 bg-[#061525]/60 px-4 shadow-none hover:bg-white/[0.04]"
     />
   );
 }

@@ -3,12 +3,114 @@
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Settings, User, Bell, Shield, Trash2 } from "lucide-react";
+import { CompetitionPageShell } from "@/components/competition/competition-page-shell";
+import { Settings, User, Bell, Shield, Trash2, type LucideIcon } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
+import type { ReactNode } from "react";
+
+const testNotifications = [
+  { type: "TEAM_INVITATION", label: "Invito a un team", tone: "text-blue-400", icon: User },
+  { type: "MATCH_SCHEDULED", label: "Match programmato", tone: "text-purple-400", icon: Bell },
+  { type: "MATCH_RESULT", label: "Risultato match", tone: "text-green-400", icon: Settings },
+  { type: "TOURNAMENT_UPDATE", label: "Aggiornamento torneo", tone: "text-[#57ffff]", icon: Settings },
+  { type: "SYSTEM", label: "Notifica di sistema", tone: "text-[#ffd63d]", icon: Settings },
+] as const;
+
+function SettingsPanel({
+  icon: PanelIcon,
+  title,
+  description,
+  action,
+  danger,
+  className,
+  children,
+}: {
+  icon: LucideIcon;
+  title: string;
+  description: string;
+  action?: ReactNode;
+  danger?: boolean;
+  className?: string;
+  children: ReactNode;
+}) {
+  return (
+    <article
+      className={`relative overflow-hidden rounded-[28px] border-2 p-6 shadow-[0_26px_70px_rgba(0,20,65,0.34)] backdrop-blur-2xl sm:p-7 ${
+        danger ? "border-red-500/45 bg-[#2b0713]/62" : "border-white/20 bg-[#061b3b]/68"
+      } ${className ?? ""}`}
+    >
+      <div
+        aria-hidden
+        className={`absolute -right-24 -top-24 h-56 w-56 rounded-full blur-3xl ${
+          danger ? "bg-red-500/18" : "bg-[#57ffff]/16"
+        }`}
+      />
+      <div className="relative flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <div className="flex items-center gap-3">
+            <span
+              className={`grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-white/[0.06] ${
+                danger ? "text-red-400" : "text-[#57ffff]"
+              }`}
+            >
+              <PanelIcon className="h-5 w-5" />
+            </span>
+            <h2
+              className={`text-xl font-black tracking-[-0.02em] ${danger ? "text-red-400" : "text-white"}`}
+            >
+              {title}
+            </h2>
+          </div>
+          <p className="mt-2 text-sm leading-relaxed text-white/62">{description}</p>
+        </div>
+        {action}
+      </div>
+      <div className="relative mt-6">{children}</div>
+    </article>
+  );
+}
+
+function InfoRow({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <div className="rounded-2xl border border-white/14 bg-white/[0.05] px-4 py-3">
+      <p className="text-[10px] font-black uppercase tracking-[0.14em] text-white/52">{label}</p>
+      <div className="mt-1 font-semibold text-white">{children}</div>
+    </div>
+  );
+}
+
+function ToggleRow({
+  title,
+  description,
+  enabled,
+  onToggle,
+}: {
+  title: string;
+  description: string;
+  enabled: boolean;
+  onToggle?: () => void;
+}) {
+  return (
+    <div className="flex items-center justify-between gap-4 rounded-2xl border border-white/14 bg-white/[0.05] px-4 py-3">
+      <div className="min-w-0">
+        <p className="font-bold text-white">{title}</p>
+        <p className="text-sm text-white/58">{description}</p>
+      </div>
+      <Button
+        variant={enabled ? "cyan" : "outline"}
+        size="sm"
+        onClick={onToggle}
+        disabled={!onToggle}
+        className="shrink-0 rounded-xl font-black disabled:opacity-100"
+      >
+        {enabled ? "Attivo" : "Disattivo"}
+      </Button>
+    </div>
+  );
+}
 
 export default function SettingsPage() {
   const { data: session, status } = useSession();
@@ -27,7 +129,6 @@ export default function SettingsPage() {
   }, [status]);
 
   useEffect(() => {
-    // Load preferences from localStorage
     const saved = localStorage.getItem("notificationPrefs");
     if (saved) {
       setNotificationPrefs(JSON.parse(saved));
@@ -120,255 +221,148 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-transparent py-12">
-      <div className="container mx-auto px-4">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center space-x-3 mb-2">
-            <Settings className="h-8 w-8 text-cyan" />
-            <h1 className="page-title text-4xl font-bold">Settings</h1>
+    <CompetitionPageShell
+      eyebrow="Il tuo account CoralMC"
+      title="Impostazioni"
+      description="Collega il tuo nick Minecraft, decidi quali notifiche ricevere e gestisci privacy e sicurezza del profilo."
+    >
+      <div className="mx-auto grid w-full max-w-5xl gap-5 md:grid-cols-2">
+        <SettingsPanel
+          icon={User}
+          title="Informazioni account"
+          description="I dati del tuo profilo e lo stato dell'iscrizione."
+        >
+          <div className="space-y-3">
+            <div className="rounded-2xl border border-white/14 bg-white/[0.05] px-4 py-3">
+              <label className="text-[10px] font-black uppercase tracking-[0.14em] text-white/52">
+                Nick Minecraft
+              </label>
+              <div className="mt-2 flex gap-2">
+                <input
+                  value={minecraftUsername}
+                  onChange={(e) => setMinecraftUsername(e.target.value)}
+                  placeholder={session.user.minecraftUsername || "Es: Steve"}
+                  className="min-w-0 flex-1 rounded-xl border border-white/15 bg-[#03142b]/70 px-3 py-2 text-sm font-semibold text-white outline-none transition-colors placeholder:text-white/35 focus:border-[#57ffff]/60"
+                />
+                <Button
+                  variant="cyan"
+                  onClick={saveMinecraftUsername}
+                  disabled={savingMinecraftUsername}
+                  className="shrink-0 rounded-xl font-black"
+                >
+                  {savingMinecraftUsername ? "Salvataggio…" : "Salva"}
+                </Button>
+              </div>
+              <p className="mt-2 text-xs text-white/48">
+                Serve per iscriversi ai tornei (solo chi l’ha collegato può essere invitato).
+              </p>
+            </div>
+            <InfoRow label="Username">{session.user.name}</InfoRow>
+            <InfoRow label="Email">{session.user.email}</InfoRow>
+            <InfoRow label="Discord">{session.user.discordTag || "Non collegato"}</InfoRow>
+            <div className="grid grid-cols-2 gap-3">
+              <InfoRow label="Ruolo">
+                <Badge
+                  variant={
+                    session.user.role === "ADMIN" || session.user.role === "SUPER_ADMIN"
+                      ? "default"
+                      : "secondary"
+                  }
+                >
+                  {session.user.role}
+                </Badge>
+              </InfoRow>
+              <InfoRow label="Stato">
+                <Badge variant={session.user.status === "ACTIVE" ? "default" : "destructive"}>
+                  {session.user.status}
+                </Badge>
+              </InfoRow>
+            </div>
           </div>
-          <p className="text-gray">Manage your account settings and preferences</p>
-        </div>
+        </SettingsPanel>
 
-        <div className="grid gap-6 md:grid-cols-2">
-          {/* Account Information */}
-          <Card className="bg-darkslategray-100 border-deepskyblue-300">
-            <CardHeader>
-              <div className="flex items-center space-x-2">
-                <User className="h-5 w-5 text-cyan" />
-                <CardTitle>Account Information</CardTitle>
-              </div>
-              <CardDescription>Your account details and status</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <label className="text-sm font-medium text-gray">Minecraft Nick</label>
-                <div className="mt-1 flex gap-2">
-                  <input
-                    value={minecraftUsername}
-                    onChange={(e) => setMinecraftUsername(e.target.value)}
-                    placeholder={session.user.minecraftUsername || "Es: Steve"}
-                    className="flex-1 rounded-md border border-white/10 bg-black/20 px-3 py-2 text-sm text-white outline-none focus:border-cyan/50"
-                  />
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={saveMinecraftUsername}
-                    disabled={savingMinecraftUsername}
-                  >
-                    {savingMinecraftUsername ? "Salvataggio..." : "Salva"}
-                  </Button>
-                </div>
-                <p className="mt-1 text-xs text-gray/80">
-                  Serve per iscriversi ai tornei (solo chi l’ha collegato può essere invitato).
-                </p>
-              </div>
-              <div>
-                <label className="text-sm font-medium text-gray">Username</label>
-                <p className="text-white font-semibold">{session.user.name}</p>
-              </div>
-              <div>
-                <label className="text-sm font-medium text-gray">Email</label>
-                <p className="text-white">{session.user.email}</p>
-              </div>
-              <div>
-                <label className="text-sm font-medium text-gray">Discord Tag</label>
-                <p className="text-white">{session.user.discordTag || "Not connected"}</p>
-              </div>
-              <div>
-                <label className="text-sm font-medium text-gray">Role</label>
-                <div className="mt-1">
-                  <Badge variant={session.user.role === "ADMIN" || session.user.role === "SUPER_ADMIN" ? "default" : "secondary"}>
-                    {session.user.role}
-                  </Badge>
-                </div>
-              </div>
-              <div>
-                <label className="text-sm font-medium text-gray">Status</label>
-                <div className="mt-1">
-                  <Badge variant={session.user.status === "ACTIVE" ? "default" : "destructive"}>
-                    {session.user.status}
-                  </Badge>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+        <SettingsPanel
+          icon={Bell}
+          title="Notifiche"
+          description="Scegli di cosa vuoi essere avvisato."
+          action={
+            <Button asChild variant="outline" size="sm" className="rounded-xl font-black">
+              <Link href="/notifications">Vedi tutte</Link>
+            </Button>
+          }
+        >
+          <div className="space-y-3">
+            <ToggleRow
+              title="Aggiornamenti tornei"
+              description="Avvisi sulle modifiche ai tornei"
+              enabled={notificationPrefs.tournamentUpdates}
+              onToggle={() => toggleNotification("tournamentUpdates")}
+            />
+            <ToggleRow
+              title="Promemoria match"
+              description="Ricordati le partite prima che inizino"
+              enabled={notificationPrefs.matchReminders}
+              onToggle={() => toggleNotification("matchReminders")}
+            />
+            <ToggleRow
+              title="Inviti ai team"
+              description="Avvisi quando un team ti invita"
+              enabled={notificationPrefs.teamInvitations}
+              onToggle={() => toggleNotification("teamInvitations")}
+            />
+          </div>
+        </SettingsPanel>
 
-          {/* Notifications */}
-          <Card className="bg-darkslategray-100 border-deepskyblue-300">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <Bell className="h-5 w-5 text-cyan" />
-                  <CardTitle>Notifications</CardTitle>
-                </div>
-                <Link href="/notifications">
-                  <Button variant="outline" size="sm">
-                    View All
-                  </Button>
-                </Link>
-              </div>
-              <CardDescription>Manage your notification preferences</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-medium text-white">Tournament Updates</p>
-                  <p className="text-sm text-gray">Get notified about tournament changes</p>
-                </div>
-                <Button 
-                  variant={notificationPrefs.tournamentUpdates ? "default" : "outline"} 
-                  size="sm"
-                  onClick={() => toggleNotification("tournamentUpdates")}
-                >
-                  {notificationPrefs.tournamentUpdates ? "Enabled" : "Disabled"}
-                </Button>
-              </div>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-medium text-white">Match Reminders</p>
-                  <p className="text-sm text-gray">Receive reminders before matches</p>
-                </div>
-                <Button 
-                  variant={notificationPrefs.matchReminders ? "default" : "outline"} 
-                  size="sm"
-                  onClick={() => toggleNotification("matchReminders")}
-                >
-                  {notificationPrefs.matchReminders ? "Enabled" : "Disabled"}
-                </Button>
-              </div>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-medium text-white">Team Invitations</p>
-                  <p className="text-sm text-gray">Get notified of team invites</p>
-                </div>
-                <Button 
-                  variant={notificationPrefs.teamInvitations ? "default" : "outline"} 
-                  size="sm"
-                  onClick={() => toggleNotification("teamInvitations")}
-                >
-                  {notificationPrefs.teamInvitations ? "Enabled" : "Disabled"}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+        <SettingsPanel
+          icon={Bell}
+          title="Notifiche di prova"
+          description="Genera una notifica di esempio per vedere come appare."
+        >
+          <div className="space-y-2">
+            {testNotifications.map(({ type, label, tone, icon: TestIcon }) => (
+              <Button
+                key={type}
+                variant="outline"
+                className="w-full justify-start rounded-xl font-bold"
+                onClick={() => createTestNotification(type)}
+              >
+                <TestIcon className={`mr-2 h-4 w-4 ${tone}`} />
+                {label}
+              </Button>
+            ))}
+          </div>
+        </SettingsPanel>
 
-          {/* Test Notifications */}
-          <Card className="bg-darkslategray-100 border-deepskyblue-300">
-            <CardHeader>
-              <div className="flex items-center space-x-2">
-                <Bell className="h-5 w-5 text-cyan" />
-                <CardTitle>Test Notifications</CardTitle>
-              </div>
-              <CardDescription>Create test notifications to see how they look</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="w-full justify-start"
-                onClick={() => createTestNotification("TEAM_INVITATION")}
-              >
-                <User className="h-4 w-4 mr-2 text-blue-400" />
-                Team Invitation
-              </Button>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="w-full justify-start"
-                onClick={() => createTestNotification("MATCH_SCHEDULED")}
-              >
-                <Bell className="h-4 w-4 mr-2 text-purple-400" />
-                Match Scheduled
-              </Button>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="w-full justify-start"
-                onClick={() => createTestNotification("MATCH_RESULT")}
-              >
-                <Settings className="h-4 w-4 mr-2 text-green-400" />
-                Match Result
-              </Button>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="w-full justify-start"
-                onClick={() => createTestNotification("TOURNAMENT_UPDATE")}
-              >
-                <Settings className="h-4 w-4 mr-2 text-cyan" />
-                Tournament Update
-              </Button>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="w-full justify-start"
-                onClick={() => createTestNotification("SYSTEM")}
-              >
-                <Settings className="h-4 w-4 mr-2 text-yellow-400" />
-                System Notification
-              </Button>
-            </CardContent>
-          </Card>
+        <SettingsPanel
+          icon={Shield}
+          title="Privacy e sicurezza"
+          description="Controlla cosa mostrare agli altri giocatori."
+        >
+          <div className="space-y-3">
+            <ToggleRow title="Profilo pubblico" description="Chi può vedere il tuo profilo" enabled />
+            <ToggleRow title="Mostra statistiche" description="Rendi pubblici i tuoi numeri" enabled />
+            <ToggleRow title="Mostra stato online" description="Fai vedere quando sei connesso" enabled />
+          </div>
+        </SettingsPanel>
 
-          {/* Privacy & Security */}
-          <Card className="bg-darkslategray-100 border-deepskyblue-300">
-            <CardHeader>
-              <div className="flex items-center space-x-2">
-                <Shield className="h-5 w-5 text-cyan" />
-                <CardTitle>Privacy & Security</CardTitle>
-              </div>
-              <CardDescription>Manage your privacy settings</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-medium text-white">Profile Visibility</p>
-                  <p className="text-sm text-gray">Who can see your profile</p>
-                </div>
-                <Button variant="outline" size="sm">Public</Button>
-              </div>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-medium text-white">Show Stats</p>
-                  <p className="text-sm text-gray">Display your stats publicly</p>
-                </div>
-                <Button variant="outline" size="sm">Enabled</Button>
-              </div>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-medium text-white">Show Online Status</p>
-                  <p className="text-sm text-gray">Let others see when you&apos;re online</p>
-                </div>
-                <Button variant="outline" size="sm">Enabled</Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Danger Zone */}
-          <Card className="bg-darkslategray-100 border-crimson-100 md:col-span-2">
-            <CardHeader>
-              <div className="flex items-center space-x-2">
-                <Trash2 className="h-5 w-5 text-red-500" />
-                <CardTitle className="text-red-500">Danger Zone</CardTitle>
-              </div>
-              <CardDescription>Irreversible actions</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <p className="font-medium text-white mb-2">Delete Account</p>
-                <p className="text-sm text-gray mb-4">
-                  Permanently delete your account and all associated data. This action cannot be undone.
-                </p>
-                <Button variant="destructive" size="sm">
-                  Delete Account
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+        <SettingsPanel
+          icon={Trash2}
+          title="Zona pericolosa"
+          description="Azioni irreversibili sul tuo account."
+          danger
+          className="md:col-span-2"
+        >
+          <div className="rounded-2xl border border-red-500/25 bg-red-500/[0.06] px-4 py-4">
+            <p className="font-bold text-white">Elimina account</p>
+            <p className="mt-2 text-sm leading-relaxed text-white/62">
+              Cancella definitivamente il tuo account e tutti i dati collegati. L’operazione non può essere annullata.
+            </p>
+            <Button variant="destructive" className="mt-4 rounded-xl font-black">
+              Elimina account
+            </Button>
+          </div>
+        </SettingsPanel>
       </div>
-    </div>
+    </CompetitionPageShell>
   );
 }

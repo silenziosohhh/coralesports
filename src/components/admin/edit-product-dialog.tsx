@@ -38,7 +38,13 @@ type Category = {
   name: string;
 };
 
-export function EditProductDialog({ product, categories }: { product: Product; categories: Category[] }) {
+export function EditProductDialog({
+  product,
+  categories,
+}: {
+  product: Product;
+  categories: Category[];
+}) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -93,11 +99,11 @@ export function EditProductDialog({ product, categories }: { product: Product; c
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button size="sm" variant="outline">
-          <Pencil className="h-4 w-4 mr-1" />
+          <Pencil className="mr-1 h-4 w-4" />
           Modifica
         </Button>
       </DialogTrigger>
-      <DialogContent className="glass-card max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Modifica Prodotto</DialogTitle>
           <DialogDescription>Aggiorna le informazioni del prodotto.</DialogDescription>
@@ -116,7 +122,10 @@ export function EditProductDialog({ product, categories }: { product: Product; c
             </div>
             <div className="space-y-2">
               <Label htmlFor="edit-slug">
-                Slug * <Button type="button" size="sm" variant="ghost" onClick={generateSlug}>Auto</Button>
+                Slug *{" "}
+                <Button type="button" size="sm" variant="ghost" onClick={generateSlug}>
+                  Auto
+                </Button>
               </Label>
               <Input
                 id="edit-slug"
@@ -193,7 +202,7 @@ export function EditProductDialog({ product, categories }: { product: Product; c
           </div>
 
           <div className="flex gap-4">
-            <label className="flex items-center gap-2 cursor-pointer">
+            <label className="flex cursor-pointer items-center gap-2">
               <input
                 type="checkbox"
                 checked={formData.isFeatured}
@@ -202,7 +211,7 @@ export function EditProductDialog({ product, categories }: { product: Product; c
               />
               <span className="text-sm text-white">In Evidenza</span>
             </label>
-            <label className="flex items-center gap-2 cursor-pointer">
+            <label className="flex cursor-pointer items-center gap-2">
               <input
                 type="checkbox"
                 checked={formData.isActive}
@@ -214,7 +223,12 @@ export function EditProductDialog({ product, categories }: { product: Product; c
           </div>
 
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setOpen(false)} disabled={loading}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setOpen(false)}
+              disabled={loading}
+            >
               Annulla
             </Button>
             <Button type="submit" disabled={loading}>

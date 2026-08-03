@@ -26,8 +26,6 @@ export function CreatorsSection({ creators, className }: { creators: LandingCrea
           initial={{ opacity: 0, y: 10 }}
           animate={hasScrolledIn ? { opacity: 1, y: 0 } : undefined}
           transition={{ duration: 0.5 }}
-          // NB: text-white/40 & co. non esistono in questo progetto (il tema mappa white su
-          // una var(), e Tailwind non ci applica l'opacità): i token gray-* invece funzionano.
           className="inline-flex items-center justify-center gap-3 text-xs font-semibold uppercase tracking-[0.3em] text-gray-400"
         >
           <span className="text-[var(--color-accent)]">04</span>
@@ -77,7 +75,9 @@ export function CreatorsSection({ creators, className }: { creators: LandingCrea
             <span className="mt-6 h-px w-full max-w-[280px] bg-gradient-to-r from-transparent via-[rgba(255,255,255,0.18)] to-transparent" />
 
             <h3 className="mt-6 text-2xl font-bold text-white">{creator.name}</h3>
-            <p className="mt-2 text-xs font-semibold uppercase tracking-[0.2em] text-gray-400">{creator.role}</p>
+            <p className="mt-2 text-xs font-semibold uppercase tracking-[0.2em] text-gray-400">
+              {t("creators.role")}
+            </p>
 
             <div className="mt-5 flex items-center justify-center gap-3 text-sm">
               <span className="inline-flex items-center gap-2 font-semibold text-gray-200">

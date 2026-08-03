@@ -1,16 +1,28 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { CompetitionPageShell } from "@/components/competition/competition-page-shell";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ArrowLeft, Users, Trophy, Calendar, Crown, MoreVertical, LogOut, UserPlus, UserX } from "lucide-react";
+import {
+  ArrowLeft,
+  Users,
+  Trophy,
+  Calendar,
+  Crown,
+  MoreVertical,
+  LogOut,
+  UserPlus,
+  UserX,
+} from "lucide-react";
 import Link from "next/link";
 import { LeaveTeamDialog } from "@/components/teams/leave-team-dialog";
 import { InviteTeamDialog } from "@/components/teams/invite-team-dialog";
+import { TeamAvatar } from "@/components/teams/team-avatar";
+import { CoralLoadingScreen } from "@/components/ui/coral-loading-screen";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,6 +30,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
+import { TeamScoreboardPanel } from "./_components/TeamScoreboard";
+import { INTL_LOCALE, useI18n } from "@/lib/i18n";
+
+const PANEL =
+  "relative overflow-hidden rounded-[28px] border-2 border-white/20 bg-[#061b3b]/68 shadow-[0_26px_70px_rgba(0,20,65,0.34)] backdrop-blur-2xl";
 
 interface TeamMember {
   id: string;
@@ -26,6 +43,7 @@ interface TeamMember {
     id: string;
     name: string;
     image: string | null;
+    minecraftUsername?: string | null;
     discordTag?: string | null;
     elo: number;
   };
@@ -46,20 +64,18 @@ interface Team {
 }
 
 export default function TeamDetailPage() {
+  const { t, locale } = useI18n();
   const params = useParams();
   const router = useRouter();
   const { data: session } = useSession();
   const [team, setTeam] = useState<Team | null>(null);
   const [loading, setLoading] = useState(true);
   const [leaveOpen, setLeaveOpen] = useState(false);
+  const teamId = String(params.id);
 
-  useEffect(() => {
-    fetchTeam();
-  }, [params.id]);
-
-  const fetchTeam = async () => {
+  const fetchTeam = useCallback(async () => {
     try {
-      const response = await fetch(`/api/teams/${params.id}`);
+      const response = await fetch(`/api/teams/${teamId}`);
       if (response.ok) {
         const data = await response.json();
         setTeam(data);
@@ -69,32 +85,49 @@ export default function TeamDetailPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [teamId]);
+
+  useEffect(() => {
+    void fetchTeam();
+  }, [fetchTeam]);
 
   if (loading) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[var(--color-primary)] mx-auto mb-4"></div>
-            <p className="text-[var(--text-secondary)]">Loading team...</p>
-          </div>
-        </div>
-      </div>
-    );
+    return <CoralLoadingScreen messageKey="loading.team" />;
   }
 
   if (!team) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">Team not found</h1>
-          <Button onClick={() => router.push("/teams")}>
+      <CompetitionPageShell
+        eyebrow={t("team.detail.eyebrow")}
+        title={t("team.detail.notFoundTitle")}
+        accent={t("team.detail.notFoundAccent")}
+        description={t("team.detail.notFoundDescription")}
+        action={
+          <Button
+            variant="cyan"
+            size="lg"
+            className="h-12 rounded-xl px-6 font-black"
+            onClick={() => router.push("/teams")}
+          >
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Teams
+            {t("team.detail.back")}
           </Button>
-        </div>
-      </div>
+        }
+      >
+        <article className={`${PANEL} px-6 py-16 text-center`}>
+          <div
+            aria-hidden
+            className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(0,157,255,0.14),transparent_52%)]"
+          />
+          <Users className="text-cyan-300/60 relative mx-auto h-10 w-10" />
+          <h2 className="relative mt-5 text-2xl font-black text-white">
+            {t("team.detail.emptyTitle")}
+          </h2>
+          <p className="relative mx-auto mt-3 max-w-lg text-sm leading-relaxed text-white/45">
+            {t("team.detail.emptyDescription")}
+          </p>
+        </article>
+      </CompetitionPageShell>
     );
   }
 
@@ -109,7 +142,7 @@ export default function TeamDetailPage() {
       const res = await fetch(`/api/teams/${team.id}/members/${userId}`, { method: "DELETE" });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Errore");
-      toast.success("Membro rimosso");
+      toast.success(t("team.detail.memberRemoved"));
       await fetchTeam();
     } catch (e: any) {
       toast.error(e.message);
@@ -117,71 +150,90 @@ export default function TeamDetailPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      {/* Back Button */}
-      <Button
-        variant="ghost"
-        onClick={() => router.push("/teams")}
-        className="mb-6"
+    <CompetitionPageShell
+      eyebrow={t("team.detail.eyebrow")}
+      title={team.name}
+      description={
+        team.description ??
+        t("team.detail.defaultDescription")
+      }
+      action={
+        <Button
+          variant="outline"
+          size="lg"
+          className="h-12 rounded-xl px-6 font-black"
+          onClick={() => router.push("/teams")}
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          {t("team.detail.back")}
+        </Button>
+      }
+    >
+      <section
+        data-reveal="zoom"
+        className="relative mb-6 overflow-hidden rounded-[28px] border-2 border-white/15 bg-[#061b3b]/72 p-6 shadow-[0_26px_70px_rgba(0,20,65,0.34)] backdrop-blur-2xl sm:p-8"
       >
-        <ArrowLeft className="mr-2 h-4 w-4" />
-        Back to Teams
-      </Button>
+        <div
+          aria-hidden
+          className="absolute inset-0 bg-[radial-gradient(circle_at_15%_0%,rgba(0,157,255,0.22),transparent_58%)]"
+        />
+        <div className="relative flex flex-col gap-6 md:flex-row md:items-center">
+          <TeamAvatar
+            team={team}
+            size={96}
+            showSourceHint
+            className="rounded-2xl border-[#57ffff]/40"
+          />
 
-      {/* Team Header */}
-      <Card className="mb-8">
-        <CardContent className="p-8">
-          <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
-            <div className="w-24 h-24 rounded-lg bg-[var(--bg-secondary)] flex items-center justify-center text-4xl font-bold text-[var(--color-primary)] border border-[var(--border-color)]">
-              {team.logo ? (
-                <img src={team.logo} alt={team.name} className="w-full h-full object-cover rounded-lg" />
-              ) : (
-                team.tag
-              )}
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-3">
+              <h1 className="text-[clamp(2rem,4.5vw,3.2rem)] font-black leading-[0.95] tracking-[-0.045em] text-white">
+                {team.name}
+              </h1>
+              <span className="rounded-full border border-[#57ffff]/45 bg-[#57ffff]/12 px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em] text-[#57ffff]">
+                {team.tag}
+              </span>
             </div>
-            <div className="flex-1">
-              <div className="flex items-center gap-3 mb-2">
-                <h1 className="text-4xl font-bold">{team.name}</h1>
-                <Badge className="bg-[var(--color-primary)] text-[var(--bg-primary)]">
-                  {team.tag}
-                </Badge>
-              </div>
-              {team.description && (
-                <p className="text-[var(--text-secondary)] mb-4">{team.description}</p>
-              )}
-              <div className="flex flex-wrap gap-4 text-sm text-[var(--text-secondary)]">
-                <div className="flex items-center gap-2">
-                  <Users className="h-4 w-4" />
-                  {team.members.length} Members
-                </div>
-                <div className="flex items-center gap-2">
-                  <Trophy className="h-4 w-4" />
-                  {team._count.tournamentTeams} Tournaments
-                </div>
-                <div className="flex items-center gap-2">
-                  <Calendar className="h-4 w-4" />
-                  Created {new Date(team.createdAt).toLocaleDateString()}
-                </div>
-              </div>
-            </div>
-            {isMember && (
-              <div className="flex items-center gap-2">
-                {isCaptain && (
-                  <InviteTeamDialog teamId={team.id} teamName={team.name}>
-                    <Button variant="cyan" className="gap-2">
-                      <UserPlus className="h-4 w-4" />
-                      Invita
-                    </Button>
-                  </InviteTeamDialog>
-                )}
-                <Button variant="destructive" onClick={() => setLeaveOpen(true)}>
-                  {isOwner ? "Sciogli team" : "Esci"}
-                </Button>
-              </div>
+            {team.description && (
+              <p className="mt-2 max-w-2xl text-sm leading-relaxed text-white/55">
+                {team.description}
+              </p>
             )}
+            <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-xs font-semibold text-white/45">
+              <span className="inline-flex items-center gap-2">
+                <Users className="h-4 w-4 text-[#57ffff]" />
+                {t("team.detail.members", { count: team.members.length })}
+              </span>
+              <span className="inline-flex items-center gap-2">
+                <Trophy className="h-4 w-4 text-[#57ffff]" />
+                {t("team.detail.tournaments", { count: team._count.tournamentTeams })}
+              </span>
+              <span className="inline-flex items-center gap-2">
+                <Calendar className="h-4 w-4 text-[#57ffff]" />
+                {t("team.detail.createdOn", {
+                  date: new Date(team.createdAt).toLocaleDateString(INTL_LOCALE[locale]),
+                })}
+              </span>
+            </div>
           </div>
-        </CardContent>
-      </Card>
+
+          {isMember && (
+            <div className="flex shrink-0 items-center gap-2">
+              {isCaptain && (
+                <InviteTeamDialog teamId={team.id} teamName={team.name}>
+                  <Button variant="cyan" className="gap-2">
+                    <UserPlus className="h-4 w-4" />
+                    {t("team.detail.invite")}
+                  </Button>
+                </InviteTeamDialog>
+              )}
+              <Button variant="destructive" onClick={() => setLeaveOpen(true)}>
+                {isOwner ? t("team.detail.disband") : t("team.detail.leave")}
+              </Button>
+            </div>
+          )}
+        </div>
+      </section>
 
       {isMember && (
         <LeaveTeamDialog
@@ -193,85 +245,106 @@ export default function TeamDetailPage() {
         />
       )}
 
-      {/* Team Members */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+      <TeamScoreboardPanel teamId={team.id} />
+
+      <article className={`${PANEL} mt-6 p-6 sm:p-8`}>
+        <div
+          aria-hidden
+          className="absolute -right-24 -top-24 h-56 w-56 rounded-full bg-[#57ffff]/16 blur-3xl"
+        />
+        <div className="relative flex items-center gap-3">
+          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-white/[0.06] text-[#57ffff]">
             <Users className="h-5 w-5" />
-            Team Members
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {team.members.map((member) => (
-              <div
-                key={member.id}
-                className="flex items-center justify-between p-4 rounded-lg bg-[var(--bg-secondary)] border border-[var(--border-color)]"
-              >
-                <div className="flex items-center gap-4">
-                  <Avatar className="h-12 w-12">
-                    <AvatarImage src={member.user.image || ""} alt={member.user.name} />
-                    <AvatarFallback>{member.user.name[0]}</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <p className="font-semibold">{member.user.name}</p>
-                      {member.role === "CAPTAIN" && (
-                        <Crown className="h-4 w-4 text-yellow-400" />
-                      )}
-                    </div>
-                    <p className="text-sm text-[var(--text-secondary)]">
-                      {member.user.discordTag || member.role}
-                    </p>
+          </span>
+          <h2 className="text-2xl font-black tracking-[-0.03em] text-white">
+            {t("team.detail.roster")}
+          </h2>
+        </div>
+
+        <div className="relative mt-6 space-y-3">
+          {team.members.map((member) => (
+            <div
+              key={member.id}
+              className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-white/14 bg-white/[0.05] p-4 transition-colors hover:border-[#57ffff]/35"
+            >
+              <div className="flex min-w-0 items-center gap-4">
+                <Avatar className="h-12 w-12 border-2 border-[#57ffff]/35">
+                  <AvatarImage src={member.user.image || ""} alt={member.user.name} />
+                  <AvatarFallback>{member.user.name[0]}</AvatarFallback>
+                </Avatar>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2">
+                    <p className="truncate font-black text-white">{member.user.name}</p>
+                    {member.role === "CAPTAIN" && (
+                      <Crown className="h-4 w-4 shrink-0 text-[#ffd63d]" />
+                    )}
                   </div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <Badge variant="outline" className="border-[var(--color-primary)] text-[var(--color-primary)]">
-                    {member.user.elo} ELO
-                  </Badge>
-                  <Badge className={member.role === "CAPTAIN" ? "bg-yellow-500" : "bg-[var(--color-secondary)]"}>
-                    {member.role}
-                  </Badge>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" aria-label="Member options">
-                        <MoreVertical className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      {member.user.id === session?.user?.id ? (
-                        <DropdownMenuItem
-                          className="text-red-500 focus:text-red-500"
-                          onSelect={(e) => {
-                            e.preventDefault();
-                            setLeaveOpen(true);
-                          }}
-                        >
-                          <LogOut className="mr-2 h-4 w-4" />
-                          {isOwner ? "Sciogli team" : "Esci dal team"}
-                        </DropdownMenuItem>
-                      ) : isCaptain && member.role !== "CAPTAIN" ? (
-                        <DropdownMenuItem
-                          className="text-red-500 focus:text-red-500"
-                          onSelect={(e) => {
-                            e.preventDefault();
-                            removeMember(member.user.id);
-                          }}
-                        >
-                          <UserX className="mr-2 h-4 w-4" />
-                          Rimuovi dal team
-                        </DropdownMenuItem>
-                      ) : (
-                        <DropdownMenuItem disabled>Nessuna azione</DropdownMenuItem>
-                      )}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  <p className="truncate text-sm text-white/48">
+                    {member.user.discordTag ||
+                      (member.role === "CAPTAIN"
+                        ? t("team.detail.captain")
+                        : t("team.detail.member"))}
+                  </p>
                 </div>
               </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+              <div className="flex items-center gap-3">
+                <Badge variant="outline" className="border-[#57ffff]/45 font-black text-[#57ffff]">
+                  {member.user.elo} ELO
+                </Badge>
+                <Badge
+                  className={
+                    member.role === "CAPTAIN"
+                      ? "border-0 bg-[#ffd63d] font-black text-[#00152b]"
+                      : "border-0 bg-white/12 font-black text-white"
+                  }
+                >
+                  {member.role === "CAPTAIN"
+                    ? t("team.detail.captain")
+                    : t("team.detail.member")}
+                </Badge>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      aria-label={t("team.detail.memberOptions")}
+                    >
+                      <MoreVertical className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    {member.user.id === session?.user?.id ? (
+                      <DropdownMenuItem
+                        className="text-red-500 focus:text-red-500"
+                        onSelect={(e) => {
+                          e.preventDefault();
+                          setLeaveOpen(true);
+                        }}
+                      >
+                        <LogOut className="mr-2 h-4 w-4" />
+                        {isOwner ? t("team.detail.disband") : t("team.detail.leaveFull")}
+                      </DropdownMenuItem>
+                    ) : isCaptain && member.role !== "CAPTAIN" ? (
+                      <DropdownMenuItem
+                        className="text-red-500 focus:text-red-500"
+                        onSelect={(e) => {
+                          e.preventDefault();
+                          removeMember(member.user.id);
+                        }}
+                      >
+                        <UserX className="mr-2 h-4 w-4" />
+                        {t("team.detail.remove")}
+                      </DropdownMenuItem>
+                    ) : (
+                      <DropdownMenuItem disabled>{t("team.detail.noAction")}</DropdownMenuItem>
+                    )}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            </div>
+          ))}
+        </div>
+      </article>
+    </CompetitionPageShell>
   );
 }

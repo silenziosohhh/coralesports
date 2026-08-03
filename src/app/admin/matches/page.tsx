@@ -71,8 +71,8 @@ export default async function AdminMatchesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg-primary)] py-12">
-      <div className="container mx-auto px-4">
+    <main className="admin-page-shell min-h-screen px-4 pb-32 pt-28 sm:pt-32">
+      <div className="admin-page-content mx-auto w-full max-w-7xl">
         <div className="mb-8 flex items-center justify-between">
           <div>
             <h1 className="page-title mb-2 text-4xl font-bold">Calendario Partite</h1>
@@ -83,7 +83,6 @@ export default async function AdminMatchesPage() {
           </Button>
         </div>
 
-        {/* Stats */}
         <div className="mb-8 grid gap-4 md:grid-cols-5">
           <Card className="glass-card border-cyan/20">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -136,7 +135,6 @@ export default async function AdminMatchesPage() {
           </Card>
         </div>
 
-        {/* Matches List */}
         <Card className="glass-card border-cyan/20">
           <CardHeader>
             <CardTitle>Tutte le Partite</CardTitle>
@@ -147,17 +145,13 @@ export default async function AdminMatchesPage() {
               {matches.map((match) => (
                 <div
                   key={match.id}
-                  className="flex items-center justify-between rounded-lg border border-cyan/10 bg-slate-dark/50 p-4"
+                  className="border-cyan/10 bg-slate-dark/50 flex items-center justify-between rounded-lg border p-4"
                 >
                   <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
+                    <div className="mb-2 flex items-center gap-2">
                       <Badge variant="outline">{match.tournament.name}</Badge>
-                      {match.round && (
-                        <Badge variant="secondary">{match.round.name}</Badge>
-                      )}
-                      <Badge variant={getStatusColor(match.status)}>
-                        {match.status}
-                      </Badge>
+                      {match.round && <Badge variant="secondary">{match.round.name}</Badge>}
+                      <Badge variant={getStatusColor(match.status)}>{match.status}</Badge>
                     </div>
                     <div className="flex items-center gap-4">
                       <div className="flex-1 text-right">
@@ -167,26 +161,28 @@ export default async function AdminMatchesPage() {
                       <div className="flex items-center gap-2 px-4">
                         <div className="text-center">
                           <div className="flex items-center gap-2">
-                            <span className="text-2xl font-bold text-white">{match.team1Score}</span>
+                            <span className="text-2xl font-bold text-white">
+                              {match.team1Score}
+                            </span>
                             <span className="text-gray">-</span>
-                            <span className="text-2xl font-bold text-white">{match.team2Score}</span>
+                            <span className="text-2xl font-bold text-white">
+                              {match.team2Score}
+                            </span>
                           </div>
                           {match.scheduledAt && (
-                            <p className="text-xs text-gray mt-1">
+                            <p className="mt-1 text-xs text-gray">
                               {format(new Date(match.scheduledAt), "dd MMM HH:mm", { locale: it })}
                             </p>
                           )}
                         </div>
                       </div>
                       <div className="flex-1">
-                        <p className="font-semibold text-white">
-                          {match.team2Id ? "TBD" : "TBD"}
-                        </p>
+                        <p className="font-semibold text-white">{match.team2Id ? "TBD" : "TBD"}</p>
                         <p className="text-xs text-gray">-</p>
                       </div>
                     </div>
                   </div>
-                  <div className="flex gap-2 ml-4">
+                  <div className="ml-4 flex gap-2">
                     <Button variant="outline" size="sm">
                       Modifica
                     </Button>
@@ -200,7 +196,7 @@ export default async function AdminMatchesPage() {
               ))}
               {matches.length === 0 && (
                 <div className="py-12 text-center">
-                  <Calendar className="mx-auto h-12 w-12 text-gray/50" />
+                  <Calendar className="text-gray/50 mx-auto h-12 w-12" />
                   <p className="mt-4 text-gray">Nessuna partita programmata</p>
                 </div>
               )}
@@ -208,6 +204,6 @@ export default async function AdminMatchesPage() {
           </CardContent>
         </Card>
       </div>
-    </div>
+    </main>
   );
 }

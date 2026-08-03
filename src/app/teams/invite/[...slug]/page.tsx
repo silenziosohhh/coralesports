@@ -4,11 +4,12 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { AcceptInviteClient } from "@/components/teams/accept-invite-client";
 
-export default async function TeamInvitePage({
-  params,
-}: {
-  params: { slug: string[] };
-}) {
+export default async function TeamInvitePage(
+  props: {
+    params: Promise<{ slug: string[] }>;
+  }
+) {
+  const params = await props.params;
   const slug = params.slug ?? [];
 
   let teamId = "";

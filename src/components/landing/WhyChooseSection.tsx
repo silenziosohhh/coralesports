@@ -11,7 +11,6 @@ type WhyChooseSectionProps = {
   className?: string;
 };
 
-// Feature che usano un'immagine dedicata al posto della card/visual generata.
 const featureImages: Record<LandingFeature["slug"], string> = {
   brackets: "/brackets.png",
   teams: "/gestione-team.png",

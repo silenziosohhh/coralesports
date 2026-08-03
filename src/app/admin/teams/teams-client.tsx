@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Users } from "lucide-react";
@@ -38,14 +39,17 @@ export function TeamsClient({ teams }: TeamsClientProps) {
         {teams.map((team) => (
           <div
             key={team.id}
-            className="flex items-center justify-between rounded-lg border border-cyan/10 bg-slate-dark/50 p-4"
+            className="border-cyan/10 bg-slate-dark/50 flex items-center justify-between rounded-lg border p-4"
           >
             <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-cyan/10">
+              <div className="bg-cyan/10 flex h-12 w-12 items-center justify-center rounded-lg">
                 {team.logo ? (
-                  <img
+                  <Image
                     src={team.logo}
                     alt={team.name}
+                    width={48}
+                    height={48}
+                    unoptimized
                     className="h-12 w-12 rounded-lg object-cover"
                   />
                 ) : (
@@ -60,7 +64,7 @@ export function TeamsClient({ teams }: TeamsClientProps) {
                 <p className="text-sm text-gray">
                   Creato da: {team.createdBy.discordTag || team.createdBy.name}
                 </p>
-                <div className="mt-1 flex gap-4 text-xs text-gray/80">
+                <div className="text-gray/80 mt-1 flex gap-4 text-xs">
                   <span>Membri: {team._count.members}</span>
                   <span>Tornei: {team._count.tournamentTeams}</span>
                 </div>
@@ -70,15 +74,11 @@ export function TeamsClient({ teams }: TeamsClientProps) {
               <Button variant="outline" size="sm" asChild>
                 <Link href={`/teams/${team.id}`}>Visualizza</Link>
               </Button>
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => setEditingTeam(team)}
-              >
+              <Button variant="outline" size="sm" onClick={() => setEditingTeam(team)}>
                 Modifica
               </Button>
-              <Button 
-                variant="destructive" 
+              <Button
+                variant="destructive"
                 size="sm"
                 onClick={() => setDeletingTeam({ id: team.id, name: team.name })}
               >
