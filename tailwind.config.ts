@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import animate from "tailwindcss-animate";
 
 const fullOpacityScale = Object.fromEntries(
   Array.from({ length: 101 }, (_, step) => [String(step), String(step / 100)]),
@@ -229,7 +230,7 @@ const config: Config = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [animate],
 };
 
 export default config;
